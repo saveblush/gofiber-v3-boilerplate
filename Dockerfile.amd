@@ -1,0 +1,69 @@
+# Define version
+ARG GO_VERSION=1.23.1
+FROM golang:${GO_VERSION}-bullseye AS base
+
+ 
+# Build source code
+FROM base AS builder
+
+## Install Dist packages
+RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.5/dumb-init_1.2.5_amd64.deb
+RUN dpkg -i dumb-init_*.deb
+
+## Create user
+RUN adduser \
+  --disabled-password \
+  --gecos "" \
+  --home "/nonexistent" \
+  --shell "/sbin/nologin" \
+  --no-create-home \
+  --uid 65532 \
+  gouser
+
+## Change ownership
+RUN mkdir /app
+RUN chown gouser:gouser /app
+
+## Set working directory
+WORKDIR /app
+
+## Copy dependency
+COPY go.mod go.sum ./
+
+## Get all dependencies
+RUN go mod download
+RUN go mod verify
+
+## Copy the source code
+COPY . .
+
+#ARG ACCESS_TOKEN
+#RUN git config --global url."https://$ACCESS_TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+
+## Build app
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o main .
+
+
+# Production
+FROM scratch AS runner
+WORKDIR /app
+
+## Copy os bundle
+COPY --from=builder /usr/bin/dumb-init /usr/bin/dumb-init
+COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /etc/group /etc/group
+
+## Copy app
+COPY --from=builder /app/main .
+COPY --from=builder --chown=gouser:gouser /app/docs ./docs
+COPY --from=builder --chown=gouser:gouser /app/configs ./configs
+COPY --from=builder --chown=gouser:gouser /app/templates ./templates
+
+ENV TZ=Asia/Bangkok
+
+EXPOSE 8070
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["./main"]

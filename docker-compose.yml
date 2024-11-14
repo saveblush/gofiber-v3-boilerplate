@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  reraw-relay:
+    image: reraw:0.1.0
+    container_name: reraw-relay
+    restart: unless-stopped
+    user: ':'
+    networks:
+      - tunnel-net #the name of our Cloudflare Zero Trust Tunnel Docker's Network
+    ports:
+      - 8070:8070
+
+networks:
+  tunnel-net: #this is the name of the network that we created in the Cloudflared Container
+    external: true #we already created it!

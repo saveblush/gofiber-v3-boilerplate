@@ -1,0 +1,16 @@
+Dockerfile*
+.dockerignore
+docker-compose*
+Makefile
+LICENSE
+**/*.md
+**/*_test.go
+.env.*
+.next
+.git
+.github
+.gitignore
+.gitattributes
+.vscode
+.editorconfig
+.prettierrc

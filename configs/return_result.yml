@@ -1,0 +1,85 @@
+json_duplicate_or_invalid_format:
+  code: 1000
+  localization:
+    en: "Json field duplicate or invalid format. Please try again"
+    th: "Json มีคีย์ซ้ำกันหรือรูปแบบฟอร์เมตผิด กรุณาลองใหม่อีกครั้ง"
+
+invalid_token:
+  code: 1001
+  localization:
+    en: "Token Invalid. Please try again."
+    th: "โทเค็นไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง"
+
+invalid_permission_role:
+  code: 1002
+  localization:
+    en: "Sorry, your permission cannot do the transaction. Please try again"
+    th: "ขออภัย สิทธิ์ของคุณไม่สามารถทำรายการดังกล่าวได้ กรุณาลองใหม่อีกครั้ง"
+
+token_not_found:
+  code: 1101
+  localization:
+    en: "Sorry, token not found. Please try again."
+    th: "ขออภัย ไม่พบโทเค็น กรุณาลองใหม่อีกครั้ง"
+
+user_not_found:
+  code: 1102
+  localization:
+    en: "Sorry, user not found. Please try again."
+    th: "ขออภัย ไม่พบข้อมูลผู้ใช้งาน กรุณาลองใหม่อีกครั้ง"
+
+employee_not_found:
+  code: 1103
+  localization:
+    en: "Sorry, employee not found. Please try again."
+    th: "ขออภัย ไม่พบข้อมูลพนักงาน กรุณาลองใหม่อีกครั้ง"
+
+# These are what we response to our internal services
+internal:
+  success:
+    code: 200
+    localization:
+      en: "Success"
+      th: "สำเร็จ"
+
+  general:
+    code: 500
+    localization:
+      en: "System cannot process this request at the moment. Please try again later"
+      th: "ขออภัย ระบบไม่สามารถดำเนินการได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง"
+
+  bad_request:
+    code: 400
+    localization:
+      en: "Sorry, the request is invalid. Please make corrections and try again"
+      th: "ขออภัย การร้องขอไม่ถูกต้อง กรุณาทำการแก้ไขและลองใหม่อีกครั้ง"
+
+  connection_error:
+    code: 500
+    localization:
+      en: "Connection error. Please try again"
+      th: "ขออภัย ระบบไม่สามารถดำเนินการได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง"
+
+  database_not_found:
+    code: 404
+    localization:
+      en: "Database not found. Please try again"
+      th: "ขออภัย ไม่พบข้อมูลในระบบ กรุณาลองใหม่อีกครั้ง"
+
+  unauthorized:
+    code: 401
+    localization:
+      en: "The system does not allow you to access the request. Please try again later"
+      th: "ขออภัย ระบบไม่อนุญาตให้เข้าถึงการร้องขอได้ กรุณาลองใหม่อีกครั้ง"
+
+  forbidden:
+    code: 403
+    localization:
+      en: "Forbidden"
+      th: "ขออภัย ระบบไม่อนุญาตให้เข้าถึงการร้องขอได้ กรุณาลองใหม่อีกครั้ง"
+
+  too_many_requests:
+    code: 429
+    localization:
+      en: "Too Many Requests"
+      th: "ขออภัย ระบบมีคำขอมากเกินไป กรุณาลองใหม่อีกครั้ง"
