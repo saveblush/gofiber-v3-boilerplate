@@ -37,13 +37,3 @@ func (c *Context) GetUserLevel() string {
 
 	return token.Role
 }
-
-// GetEmpID get emp id claims
-func (c *Context) GetEmpID() string {
-	token, err := c.GetClaims()
-	if err != nil {
-		return ""
-	}
-
-	return token.EmpID
-}

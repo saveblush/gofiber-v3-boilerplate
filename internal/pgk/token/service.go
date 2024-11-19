@@ -79,8 +79,6 @@ func (s *service) VerifyRefresh(c *cctx.Context, tokenString string) (*models.To
 	return &models.TokenUser{
 		UserID:    claims.Subject,
 		UserLevel: claims.Role,
-		EmpID:     claims.EmpID,
-		LogId:     claims.LogId,
 	}, nil
 }
 
@@ -91,8 +89,6 @@ func (s *service) genToken(req *Request) (string, error) {
 	claims := &models.TokenClaims{}
 	claims.Subject = req.UserID
 	claims.Role = req.UserLevel
-	claims.EmpID = req.EmpID
-	claims.LogId = req.LogId
 	claims.Issuer = s.config.App.Issuer
 	claims.IssuedAt = jwt.NewNumericDate(now)
 	claims.ExpiresAt = jwt.NewNumericDate(now.Add(s.config.JWT.AccessExpireTime))
@@ -113,8 +109,6 @@ func (s *service) genRefreshToken(req *Request) (string, error) {
 	claims := &models.TokenClaims{}
 	claims.Subject = req.UserID
 	claims.Role = req.UserLevel
-	claims.EmpID = req.EmpID
-	claims.LogId = req.LogId
 	claims.Issuer = s.config.App.Issuer
 	claims.IssuedAt = jwt.NewNumericDate(now)
 	claims.ExpiresAt = jwt.NewNumericDate(now.Add(s.config.JWT.RefreshExpireTime))

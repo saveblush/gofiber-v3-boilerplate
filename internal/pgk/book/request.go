@@ -1,6 +1,8 @@
 package book
 
-import "github.com/saveblush/gofiber-v3-boilerplate/internal/request"
+type RequestID struct {
+	ID uint `json:"-" path:"id" form:"id" query:"id" validate:"required"`
+}
 
 type Request struct {
 	Name string `json:"name" query:"name"`
@@ -13,7 +15,7 @@ type RequestCreate struct {
 }
 
 type RequestUpdate struct {
-	request.GetOne
+	RequestID
 	Name        string `json:"name" validate:"required"`
 	Description string `json:"description"`
 	Author      string `json:"author"`

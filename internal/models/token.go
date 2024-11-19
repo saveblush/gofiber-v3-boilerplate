@@ -10,15 +10,11 @@ type Token struct {
 // token claims
 type TokenClaims struct {
 	jwt.RegisteredClaims
-	Role  string `json:"role"`
-	EmpID string `json:"emp_id"`
-	LogId string `json:"log_id"` // id log connect
+	Role string `json:"role"`
 }
 
 // ข้อมูล return สำหรับนำไป token.request ต่อ
 type TokenUser struct {
 	UserID    string `json:"user_id"`
 	UserLevel string `json:"user_level"`
-	EmpID     string `json:"emp_id"`
-	LogId     string `json:"log_id"` // id log connect
 }

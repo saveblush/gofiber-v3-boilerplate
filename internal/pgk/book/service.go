@@ -3,21 +3,22 @@ package book
 import (
 	"errors"
 
+	"gorm.io/gorm"
+
 	"github.com/jinzhu/copier"
+
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/cctx"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/models"
-	"github.com/saveblush/gofiber-v3-boilerplate/internal/request"
-	"gorm.io/gorm"
 )
 
 // service interface
 type Service interface {
 	Find(c *cctx.Context, req *Request) (interface{}, error)
-	FindByID(c *cctx.Context, req *request.GetOne) (interface{}, error)
+	FindByID(c *cctx.Context, req *RequestID) (interface{}, error)
 	Create(c *cctx.Context, req *RequestCreate) (interface{}, error)
 	Update(c *cctx.Context, req *RequestUpdate) (interface{}, error)
-	Delete(c *cctx.Context, req *request.GetOne) error
+	Delete(c *cctx.Context, req *RequestID) error
 }
 
 type service struct {
@@ -47,7 +48,7 @@ func (s *service) Find(c *cctx.Context, req *Request) (interface{}, error) {
 }
 
 // FindByID find by id
-func (s *service) FindByID(c *cctx.Context, req *request.GetOne) (interface{}, error) {
+func (s *service) FindByID(c *cctx.Context, req *RequestID) (interface{}, error) {
 	res := &models.Book{}
 	err := s.repository.FindByID(c.GetRelayDatabase(), req.ID, res)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -89,7 +90,7 @@ func (s *service) Update(c *cctx.Context, req *RequestUpdate) (interface{}, erro
 }
 
 // Delete delete
-func (s *service) Delete(c *cctx.Context, req *request.GetOne) error {
+func (s *service) Delete(c *cctx.Context, req *RequestID) error {
 	data := &models.Book{}
 	copier.Copy(data, &req)
 

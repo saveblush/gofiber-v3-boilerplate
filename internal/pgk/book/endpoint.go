@@ -5,7 +5,6 @@ import (
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/handlers"
-	"github.com/saveblush/gofiber-v3-boilerplate/internal/request"
 )
 
 // endpoint interface
@@ -32,8 +31,8 @@ func NewEndpoint() Endpoint {
 }
 
 // @Tags Book
-// @Summary get book
-// @Description get book
+// @Summary Get book
+// @Description Get book
 // @Accept json
 // @Produce json
 // @Param Accept-Language header string false "(en, th)" default(th)
@@ -43,14 +42,14 @@ func NewEndpoint() Endpoint {
 // @Failure 404 {object} models.Message
 // @Failure 410 {object} models.Message
 // @Security ApiKeyAuth
-// @Router /book/{id} [get]
+// @Router /book [get]
 func (ep *endpoint) Find(c fiber.Ctx) error {
 	return handlers.ResponseObject(c, ep.service.Find, &Request{})
 }
 
 // @Tags Book
-// @Summary get book
-// @Description get book
+// @Summary Get book
+// @Description Get book
 // @Accept json
 // @Produce json
 // @Param Accept-Language header string false "(en, th)" default(th)
@@ -62,12 +61,12 @@ func (ep *endpoint) Find(c fiber.Ctx) error {
 // @Security ApiKeyAuth
 // @Router /book/{id} [get]
 func (ep *endpoint) FindByID(c fiber.Ctx) error {
-	return handlers.ResponseObject(c, ep.service.FindByID, &request.GetOne{})
+	return handlers.ResponseObject(c, ep.service.FindByID, &RequestID{})
 }
 
 // @Tags Book
-// @Summary create book
-// @Description create book
+// @Summary Create book
+// @Description Create book
 // @Accept json
 // @Produce json
 // @Param Accept-Language header string false "(en, th)" default(th)
@@ -83,8 +82,8 @@ func (ep *endpoint) Create(c fiber.Ctx) error {
 }
 
 // @Tags Book
-// @Summary update book
-// @Description update book
+// @Summary Update book
+// @Description Update book
 // @Accept json
 // @Produce json
 // @Param Accept-Language header string false "(en, th)" default(th)
@@ -100,8 +99,8 @@ func (ep *endpoint) Update(c fiber.Ctx) error {
 }
 
 // @Tags Book
-// @Summary delete book
-// @Description delete book
+// @Summary Delete book
+// @Description Delete book
 // @Accept json
 // @Produce json
 // @Param Accept-Language header string false "(en, th)" default(th)
@@ -113,5 +112,5 @@ func (ep *endpoint) Update(c fiber.Ctx) error {
 // @Security ApiKeyAuth
 // @Router /book/:id [delete]
 func (ep *endpoint) Delete(c fiber.Ctx) error {
-	return handlers.ResponseSuccess(c, ep.service.Delete, &request.GetOne{})
+	return handlers.ResponseSuccess(c, ep.service.Delete, &RequestID{})
 }

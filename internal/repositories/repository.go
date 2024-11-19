@@ -50,11 +50,6 @@ func (r *Repository) FindLastByField(db *gorm.DB, field string, value interface{
 	return db.Where(fmt.Sprintf("%s = ?", field), value).Last(i).Error
 }
 
-// FindByFieldFullAssociations find  full associations
-func (r *Repository) FindByFieldFullAssociations(db *gorm.DB, field string, value interface{}, i interface{}) error {
-	return db.Preload(clause.Associations).Where(fmt.Sprintf("%s = ?", field), value).First(i).Error
-}
-
 // FindAllByIDs get all by ids
 func (r *Repository) FindAllByIDs(db *gorm.DB, ids []uint, i interface{}) error {
 	return db.Where("id in (?)", ids).Find(i).Error
@@ -68,11 +63,6 @@ func (r *Repository) FindAllByStrings(db *gorm.DB, field string, values []string
 // FindAllByField get all by field
 func (r *Repository) FindAllByField(db *gorm.DB, field string, values interface{}, i interface{}) error {
 	return db.Where(fmt.Sprintf("%s in (?)", field), values).Find(i).Error
-}
-
-// FindAllByFieldFullAssociations get all by field
-func (r *Repository) FindAllByFieldFullAssociations(db *gorm.DB, field string, values interface{}, i interface{}) error {
-	return db.Preload(clause.Associations).Where(fmt.Sprintf("%s = ?", field), values).Find(i).Error
 }
 
 // FindAllByValues get all by values
@@ -137,11 +127,6 @@ func (r *Repository) BulkUpsert(db *gorm.DB, uniqueKeys []string, columns []stri
 // Delete update stamp deleted_at
 func (r *Repository) Delete(db *gorm.DB, i interface{}) error {
 	return db.Omit(clause.Associations).Delete(i).Error
-}
-
-// DeleteWithCondition delete with condition
-func (r *Repository) DeleteWithCondition(db *gorm.DB, field string, value, i interface{}) error {
-	return db.Omit(clause.Associations).Where(fmt.Sprintf("%s = ?", field), value).Delete(i).Error
 }
 
 // SoftDelete soft delete
