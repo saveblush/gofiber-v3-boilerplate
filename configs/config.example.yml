@@ -1,0 +1,50 @@
+APP:
+  PROJECT_ID: "gofiber-v3-boilerplate"
+  PROJECT_NAME: "gofiber-v3-boilerplate"
+  VERSION: "0.1.0"
+  WEB_BASE_URL: ""
+  API_BASE_URL: "/api" 
+  PORT: 8000
+  ENVIRONMENT: "prod" #develop, prod
+  ISSUER: "gofiber-v3-boilerplate"
+  SOURCES:
+    - username: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      password: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+HTTP_SERVER:
+  PREFORK: false
+  RATELIMIT:
+    MAX: 221
+    EXPIRATION: 1s
+    ENABLE: true
+
+SWAGGER:
+  TITLE: "Go Fiber v3 Boilerplate API Docs"
+  DESCRIPTION: ""
+  VERSION: "1.0"
+  HOST: "localhost:8000"
+  BASE_URL: "/api/v1"
+  ENABLE: true
+
+JWT:
+  ACCESS_SECRET_KEY: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  REFRESH_SECRET_KEY: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  ACCESS_EXPIRE_TIME: 30m
+  REFRESH_EXPIRE_TIME: 4h
+
+DATABASE:
+  RELAY_SQL:
+    HOST: "localhost"
+    PORT: 5432
+    USERNAME: "user"
+    PASSWORD: "password"
+    DATABASE_NAME: "postgres"
+    DRIVER_NAME: "postgres"
+    CHARSET: "utf8mb4"
+    MAX_IDLE_CONNS: 5
+    MAX_OPEN_CONNS: 8
+    MAX_LIFE_TIME: "5m"
+    ENABLE: true
+
+HTML_TEMPLATE:
+  SYSTEM_MAINTENANCE: "system_maintenance.html"
