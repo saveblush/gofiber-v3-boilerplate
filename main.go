@@ -19,8 +19,8 @@ import (
 )
 
 // @securityDefinitions.apikey ApiKeyAuth
+// @in header
 // @name Authorization
-// @in ใส่ค่า Bearer เว้นวรรคและตามด้วย TOKEN  (Bearer ??????????)
 func main() {
 	// Init logger
 	logger.New()
@@ -37,7 +37,7 @@ func main() {
 		logger.Log().Fatalf("init return result error: %s", err)
 	}
 
-	// Set swagger
+	// Set swagger info
 	docs.SwaggerInfo.Title = config.CF.Swagger.Title
 	docs.SwaggerInfo.Description = config.CF.Swagger.Description
 	docs.SwaggerInfo.Version = config.CF.Swagger.Version
