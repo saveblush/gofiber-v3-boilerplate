@@ -71,7 +71,9 @@ func main() {
 
 	// Debug db
 	if !config.CF.App.Environment.Production() {
-		sql.DebugRelayDatabase()
+		if config.CF.Database.RelaySQL.Enable {
+			sql.DebugRelayDatabase()
+		}
 	}
 
 	// Init Circuit Breaker
