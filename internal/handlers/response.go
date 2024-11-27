@@ -16,7 +16,7 @@ func ResponseObject(c fiber.Ctx, fn interface{}, request interface{}) error {
 	ctx := cctx.New(c)
 	err := ctx.BindValue(request, true)
 	if err != nil {
-		logger.Log().Errorf("bind value error: %s", err)
+		logger.Log.Errorf("bind value error: %s", err)
 		return err
 	}
 
@@ -27,7 +27,7 @@ func ResponseObject(c fiber.Ctx, fn interface{}, request interface{}) error {
 
 	errObj := out[1].Interface()
 	if errObj != nil {
-		logger.Log().Errorf("call service error: %s", errObj)
+		logger.Log.Errorf("call service error: %s", errObj)
 		return errObj.(error)
 	}
 
@@ -43,7 +43,7 @@ func ResponseObjectWithoutRequest(c fiber.Ctx, fn interface{}) error {
 
 	errObj := out[1].Interface()
 	if errObj != nil {
-		logger.Log().Errorf("call service error: %s", errObj)
+		logger.Log.Errorf("call service error: %s", errObj)
 		return errObj.(error)
 	}
 
@@ -55,7 +55,7 @@ func ResponseSuccess(c fiber.Ctx, fn interface{}, request interface{}) error {
 	ctx := cctx.New(c)
 	err := ctx.BindValue(request, true)
 	if err != nil {
-		logger.Log().Errorf("bind value error: %s", err)
+		logger.Log.Errorf("bind value error: %s", err)
 		return err
 	}
 
@@ -66,7 +66,7 @@ func ResponseSuccess(c fiber.Ctx, fn interface{}, request interface{}) error {
 
 	errObj := out[0].Interface()
 	if errObj != nil {
-		logger.Log().Errorf("call service error: %s", errObj)
+		logger.Log.Errorf("call service error: %s", errObj)
 		return errObj.(error)
 	}
 
@@ -82,7 +82,7 @@ func ResponseSuccessWithoutRequest(c fiber.Ctx, fn interface{}) error {
 
 	errObj := out[0].Interface()
 	if errObj != nil {
-		logger.Log().Errorf("call service error: %s", errObj)
+		logger.Log.Errorf("call service error: %s", errObj)
 		return errObj.(error)
 	}
 

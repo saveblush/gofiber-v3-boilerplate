@@ -40,7 +40,7 @@ func Logger() fiber.Handler {
 			}
 		}
 
-		logs := logger.Log().With(
+		logs := logger.Log.With(
 			zap.String("host", c.Hostname()),
 			zap.String("method", c.Method()),
 			zap.String("path", c.OriginalURL()),

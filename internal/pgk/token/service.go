@@ -34,13 +34,13 @@ func NewService() Service {
 func (s *service) Create(c *cctx.Context, req *Request) (*models.Token, error) {
 	accessToken, err := s.genToken(req)
 	if err != nil {
-		logger.Log().Errorf("create accessToken error: %s", err)
+		logger.Log.Errorf("create accessToken error: %s", err)
 		return nil, err
 	}
 
 	refreshToken, err := s.genRefreshToken(req)
 	if err != nil {
-		logger.Log().Errorf("create refreshToken error: %s", err)
+		logger.Log.Errorf("create refreshToken error: %s", err)
 		return nil, err
 	}
 

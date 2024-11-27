@@ -26,7 +26,7 @@ func AuthorizationRequired() fiber.Handler {
 	basicAuth := basicauth.New(basicauth.Config{
 		Users: users,
 		Unauthorized: func(c fiber.Ctx) error {
-			logger.Log().Error("verify token error")
+			logger.Log.Error("verify token error")
 			return fiber.NewError(config.RR.Internal.Unauthorized.HTTPStatusCode(), fmt.Sprint(config.RR.InvalidToken.WithLocale(c)))
 		},
 	})
@@ -54,7 +54,7 @@ func AuthorizationAdminRequired() fiber.Handler {
 		basicAuth := basicauth.New(basicauth.Config{
 			Users: users,
 			Unauthorized: func(c fiber.Ctx) error {
-				logger.Log().Error("authorization admin error")
+				logger.Log.Error("authorization admin error")
 				return fiber.NewError(fiber.StatusUnauthorized)
 			},
 		})
@@ -75,7 +75,7 @@ func AuthorizationAPIKey() fiber.Handler {
 				return c.Next()
 			},
 			ErrorHandler: func(c fiber.Ctx, err error) error {
-				logger.Log().Error("authorization x-api-key error")
+				logger.Log.Error("authorization x-api-key error")
 				if err == keyauth.ErrMissingOrMalformedAPIKey {
 					return fiber.NewError(config.RR.Internal.Unauthorized.HTTPStatusCode(), fmt.Sprint(config.RR.InvalidToken.WithLocale(c)))
 				}

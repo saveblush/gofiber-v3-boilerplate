@@ -38,7 +38,7 @@ func (s *service) Login(c *cctx.Context, req *Request) (interface{}, error) {
 		// LogId:     logSeqno,
 	})
 	if err != nil {
-		logger.Log().Errorf("create token error: %s", err)
+		logger.Log.Errorf("create token error: %s", err)
 		return nil, err
 	}
 

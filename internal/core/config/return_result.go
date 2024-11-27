@@ -148,19 +148,19 @@ func InitReturnResult() error {
 	v.AutomaticEnv()
 
 	if err := v.ReadInConfig(); err != nil {
-		logger.Log().Errorf("read config file error: %s", err)
+		logger.Log.Errorf("read config file error: %s", err)
 		return err
 	}
 
 	if err := bindingReturnResult(v, RR); err != nil {
-		logger.Log().Errorf("binding config error: %s", err)
+		logger.Log.Errorf("binding config error: %s", err)
 		return err
 	}
 
 	v.OnConfigChange(func(e fsnotify.Event) {
-		logger.Log().Infof("config file changed: %s", e.Name)
+		logger.Log.Infof("config file changed: %s", e.Name)
 		if err := v.Unmarshal(CF); err != nil {
-			logger.Log().Errorf("binding config error: %s", err)
+			logger.Log.Errorf("binding config error: %s", err)
 		}
 	})
 	v.WatchConfig()
@@ -171,7 +171,7 @@ func InitReturnResult() error {
 // bindingReturnResult binding return result
 func bindingReturnResult(vp *viper.Viper, rr *ReturnResult) error {
 	if err := vp.Unmarshal(&rr); err != nil {
-		logger.Log().Errorf("unmarshal config error: %s", err)
+		logger.Log.Errorf("unmarshal config error: %s", err)
 		return err
 	}
 

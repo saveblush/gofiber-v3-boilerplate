@@ -29,7 +29,7 @@ func Maintenance() fiber.Handler {
 		path := fmt.Sprintf("./templates/%s", config.CF.HTMLTemplate.SystemMaintenance)
 		body, err := config.CF.ReadConfigAvailableDescription()
 		if err != nil {
-			logger.Log().Error("read file config available description error:", err)
+			logger.Log.Error("read file config available description error:", err)
 			return fiber.NewError(fiber.StatusServiceUnavailable, "Error: Available Description")
 		}
 

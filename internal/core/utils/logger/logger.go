@@ -7,15 +7,17 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// New new logger
-func New() {
+var Log *zap.SugaredLogger
+
+// InitLogger init logger
+func InitLogger() {
 	encoderConfig := zapcore.EncoderConfig{
-		TimeKey:    "time",
-		LevelKey:   "level",
-		NameKey:    "logger",
-		CallerKey:  "caller",
-		MessageKey: "msg",
-		//StacktraceKey:  "stacktrace",
+		TimeKey:        "time",
+		LevelKey:       "level",
+		NameKey:        "logger",
+		CallerKey:      "caller",
+		MessageKey:     "msg",
+		StacktraceKey:  "stacktrace",
 		LineEnding:     zapcore.DefaultLineEnding,
 		EncodeLevel:    zapcore.CapitalLevelEncoder,    // Capitalize the log level names
 		EncodeTime:     zapcore.ISO8601TimeEncoder,     // ISO8601 UTC timestamp format
@@ -34,9 +36,5 @@ func New() {
 	defer logger.Sync() // Sync writes logs to the writers (in this case, stdout)
 
 	zap.ReplaceGlobals(logger)
-}
-
-// Log log
-func Log() *zap.SugaredLogger {
-	return zap.S()
+	Log = zap.S()
 }

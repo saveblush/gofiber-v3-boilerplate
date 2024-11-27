@@ -23,18 +23,18 @@ import (
 // @name Authorization
 func main() {
 	// Init logger
-	logger.New()
+	logger.InitLogger()
 
 	// Init configuration
 	err := config.InitConfig()
 	if err != nil {
-		logger.Log().Fatalf("init configuration error: %s", err)
+		logger.Log.Fatalf("init configuration error: %s", err)
 	}
 
 	// Init return result
 	err = config.InitReturnResult()
 	if err != nil {
-		logger.Log().Fatalf("init return result error: %s", err)
+		logger.Log.Fatalf("init return result error: %s", err)
 	}
 
 	// Set swagger info
@@ -60,7 +60,7 @@ func main() {
 		}
 		session, err := sql.InitConnection(configuration)
 		if err != nil {
-			logger.Log().Fatalf("init connection db error: %s", err)
+			logger.Log.Fatalf("init connection db error: %s", err)
 		}
 		sql.RelayDatabase = session.Database
 
@@ -88,7 +88,7 @@ func main() {
 	serverShutdown := make(chan struct{})
 	go func() {
 		<-exit.Done()
-		logger.Log().Info("Gracefully shutting down...")
+		logger.Log.Info("Gracefully shutting down...")
 		_ = app.ShutdownWithContext(exit)
 		serverShutdown <- struct{}{}
 	}()
@@ -99,19 +99,19 @@ func main() {
 	}
 	err = app.Listen(fmt.Sprintf(":%d", config.CF.App.Port), listenConfig)
 	if err != nil {
-		logger.Log().Panic(err)
+		logger.Log.Panic(err)
 	}
-	logger.Log().Infof("Start server on port: %d ...", config.CF.App.Port)
+	logger.Log.Infof("Start server on port: %d ...", config.CF.App.Port)
 
 	// Cleanup tasks
 	<-serverShutdown
-	logger.Log().Info("Running cleanup tasks...")
+	logger.Log.Info("Running cleanup tasks...")
 
 	// Close db
 	if config.CF.Database.RelaySQL.Enable {
 		go sql.CloseConnection(sql.RelayDatabase)
 	}
-	logger.Log().Info("Database connection closed")
+	logger.Log.Info("Database connection closed")
 
-	logger.Log().Info("Fiber was successful shutdown")
+	logger.Log.Info("Fiber was successful shutdown")
 }

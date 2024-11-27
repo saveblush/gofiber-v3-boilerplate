@@ -8,7 +8,6 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/gofiber/fiber/v3/middleware/idempotency"
 	"github.com/gofiber/fiber/v3/middleware/limiter"
-	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/gofiber/fiber/v3/middleware/pprof"
 	"github.com/gofiber/fiber/v3/middleware/recover"
 	"github.com/gofiber/fiber/v3/middleware/requestid"
@@ -59,9 +58,9 @@ func NewServer() *fiber.App {
 	)
 
 	// Logging
-	app.Use(logger.New(logger.Config{
+	/*app.Use(logger.New(logger.Config{
 		Format: "[${ip}]:${port} ${status} - ${method} ${path}\n",
-	}))
+	}))*/
 
 	// Limiter
 	if config.CF.HTTPServer.RateLimit.Enable {
