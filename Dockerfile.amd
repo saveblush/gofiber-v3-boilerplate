@@ -37,6 +37,10 @@ RUN go mod verify
 ## Copy the source code
 COPY . .
 
+## Gen swagger
+RUN go install github.com/swaggo/swag/cmd/swag@latest
+RUN swag init --md ./docs --parseGoList --parseDependency -g main.go
+
 #ARG ACCESS_TOKEN
 #RUN git config --global url."https://$ACCESS_TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
@@ -63,7 +67,7 @@ COPY --from=builder --chown=gouser:gouser /app/templates ./templates
 
 ENV TZ=Asia/Bangkok
 
-EXPOSE 8070
+EXPOSE 8000
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["./main"]
