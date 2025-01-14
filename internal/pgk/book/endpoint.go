@@ -44,7 +44,7 @@ func NewEndpoint() Endpoint {
 // @Security ApiKeyAuth
 // @Router /book [get]
 func (ep *endpoint) Find(c fiber.Ctx) error {
-	return handlers.ResponseObject(c, ep.service.Find, &Request{})
+	return handlers.ResponseObject(c, ep.service.FindAll, &Request{})
 }
 
 // @Tags Book

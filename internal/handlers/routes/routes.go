@@ -43,10 +43,12 @@ func NewRouter(app *fiber.App) {
 
 	bookEndpoint := book.NewEndpoint()
 	bookApi := v1.Group("book", middlewares.AuthorizationRequired())
+	bookApi.Get("", bookEndpoint.Find)
 	bookApi.Get("/:id", bookEndpoint.FindByID)
 	bookApi.Post("/", bookEndpoint.Create)
 	bookApi.Put("/:id", bookEndpoint.Update)
 	bookApi.Delete("/:id", bookEndpoint.Delete)
 
+	// not found
 	app.Use(middlewares.Notfound())
 }

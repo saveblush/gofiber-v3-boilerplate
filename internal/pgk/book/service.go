@@ -15,6 +15,7 @@ import (
 // service interface
 type Service interface {
 	Find(c *cctx.Context, req *Request) (interface{}, error)
+	FindAll(c *cctx.Context, req *Request) (interface{}, error)
 	FindByID(c *cctx.Context, req *RequestID) (interface{}, error)
 	Create(c *cctx.Context, req *RequestCreate) (interface{}, error)
 	Update(c *cctx.Context, req *RequestUpdate) (interface{}, error)
@@ -40,6 +41,16 @@ func (s *service) Find(c *cctx.Context, req *Request) (interface{}, error) {
 		return map[string]interface{}{}, nil
 	}
 
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+// FindAll find all
+func (s *service) FindAll(c *cctx.Context, req *Request) (interface{}, error) {
+	res, err := s.repository.FindAll(c.GetRelayDatabase(), req)
 	if err != nil {
 		return nil, err
 	}

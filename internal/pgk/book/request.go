@@ -5,6 +5,7 @@ type RequestID struct {
 }
 
 type Request struct {
+	ID   uint   `json:"id" query:"id"`
 	Name string `json:"name" query:"name"`
 }
 

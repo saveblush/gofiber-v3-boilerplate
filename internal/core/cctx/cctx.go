@@ -15,7 +15,7 @@ import (
 const (
 	pathKey            = "path"
 	queryKey           = "query"
-	compositeFormDepth = 1
+	compositeFormDepth = 3
 	entities           = "Entities"
 	LangKey            = "lang"
 	UserKey            = "user"
@@ -40,7 +40,6 @@ func (c *Context) BindValue(i interface{}, validate bool) error {
 		//c.additionalQueryParser(i)
 
 	default:
-		//_ = c.Bind().Query(i)
 		_ = c.Bind().Body(i)
 	}
 
@@ -182,13 +181,13 @@ func (c *Context) GetClientIP() string {
 		ip = ips
 	}
 	if ip == "" {
+		ip = c.Get("X-Forwarded-For")
+	}
+	if ip == "" {
 		ip = c.Get("X-Client-IP")
 	}
 	if ip == "" {
 		ip = c.Get("X-Real-Ip")
-	}
-	if ip == "" {
-		ip = c.Get("X-Forwarded-For")
 	}
 
 	return ip
