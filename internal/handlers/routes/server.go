@@ -3,6 +3,7 @@ package routes
 import (
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/compress"
 	"github.com/gofiber/fiber/v3/middleware/cors"
@@ -13,7 +14,6 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/requestid"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
-	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/handlers/middlewares"
 )
 
@@ -22,8 +22,8 @@ const (
 	MaximumSize10MB = 10 * 1024 * 1024
 	// MaximumSize1MB body limit 1 mb.
 	MaximumSize1MB = 1 * 1024 * 1024
-	// Timeout timeout 5 seconds
-	Timeout5s = 5 * time.Second
+	// Timeout timeout 120 seconds
+	Timeout120s = 120 * time.Second
 	// Timeout timeout 10 seconds
 	Timeout10s = 10 * time.Second
 )
@@ -34,15 +34,13 @@ func NewServer() *fiber.App {
 		AppName:           config.CF.App.ProjectName,
 		ServerHeader:      config.CF.App.ProjectName,
 		BodyLimit:         MaximumSize10MB,
-		ReadBufferSize:    MaximumSize1MB,
-		WriteBufferSize:   MaximumSize1MB,
-		IdleTimeout:       Timeout10s,
-		ReadTimeout:       Timeout5s,
-		WriteTimeout:      Timeout5s,
+		IdleTimeout:       Timeout120s,
+		ReadTimeout:       Timeout10s,
+		WriteTimeout:      Timeout10s,
 		ReduceMemoryUsage: true,
 		CaseSensitive:     true,
-		JSONEncoder:       utils.Marshal,
-		JSONDecoder:       utils.Unmarshal,
+		JSONEncoder:       sonic.Marshal,
+		JSONDecoder:       sonic.Unmarshal,
 	})
 
 	// Middlewares
@@ -56,11 +54,6 @@ func NewServer() *fiber.App {
 		pprof.New(),
 		recover.New(),
 	)
-
-	// Logging
-	/*app.Use(logger.New(logger.Config{
-		Format: "[${ip}]:${port} ${status} - ${method} ${path}\n",
-	}))*/
 
 	// Limiter
 	if config.CF.HTTPServer.RateLimit.Enable {

@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils"
+	"github.com/bytedance/sonic"
 )
 
 // Equal equal
@@ -52,12 +52,12 @@ func IsEmpty(i interface{}) bool {
 
 // ConvertInterfaceToStruct convert interface to struct
 func ConvertInterfaceToStruct(data, value interface{}) error {
-	b, err := utils.Marshal(data)
+	b, err := sonic.Marshal(&data)
 	if err != nil {
 		return err
 	}
 
-	err = utils.Unmarshal(b, &value)
+	err = sonic.Unmarshal(b, &value)
 	if err != nil {
 		return err
 	}

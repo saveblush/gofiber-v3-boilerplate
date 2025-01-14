@@ -6,9 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/redis/go-redis/v9"
-
-	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils"
 )
 
 // Client redis
@@ -71,7 +70,7 @@ type Service interface {
 }
 
 func (c *Connection) Set(key string, value interface{}, expiredTime time.Duration) error {
-	data, errMar := utils.Marshal(&value)
+	data, errMar := sonic.Marshal(&value)
 	if errMar != nil {
 		return errMar
 	}
@@ -94,7 +93,7 @@ func (c *Connection) Get(key string, value interface{}) error {
 		return err
 	}
 
-	errMar := utils.Unmarshal([]byte(val), &value)
+	errMar := sonic.Unmarshal([]byte(val), &value)
 	if errMar != nil {
 		return errMar
 	}

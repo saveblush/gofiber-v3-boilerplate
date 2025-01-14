@@ -11,29 +11,20 @@ var Log *zap.SugaredLogger
 
 // InitLogger init logger
 func InitLogger() {
-	encoderConfig := zapcore.EncoderConfig{
-		TimeKey:        "time",
-		LevelKey:       "level",
-		NameKey:        "logger",
-		CallerKey:      "caller",
-		MessageKey:     "msg",
-		StacktraceKey:  "stacktrace",
-		LineEnding:     zapcore.DefaultLineEnding,
-		EncodeLevel:    zapcore.CapitalLevelEncoder,    // Capitalize the log level names
-		EncodeTime:     zapcore.ISO8601TimeEncoder,     // ISO8601 UTC timestamp format
-		EncodeDuration: zapcore.SecondsDurationEncoder, // Duration in seconds
-		EncodeCaller:   zapcore.ShortCallerEncoder,     // Short caller (file and line)
-	}
+	lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
+		return lvl < zapcore.ErrorLevel
+	})
 
-	// Create a core logger with JSON encoding
-	core := zapcore.NewCore(
-		zapcore.NewJSONEncoder(encoderConfig), // Using JSON encoder
-		zapcore.NewMultiWriteSyncer(zapcore.AddSync(os.Stdout)),
-		zapcore.InfoLevel,
+	encoderConfig := zap.NewProductionEncoderConfig()
+	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+
+	consoleEncoder := zapcore.NewJSONEncoder(encoderConfig)
+	core := zapcore.NewTee(
+		zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), lowPriority),
 	)
 
-	logger := zap.New(core, zap.AddCaller(), zap.AddStacktrace(zap.ErrorLevel))
-	defer logger.Sync() // Sync writes logs to the writers (in this case, stdout)
+	logger := zap.New(core, zap.AddCaller())
+	defer logger.Sync()
 
 	zap.ReplaceGlobals(logger)
 	Log = zap.S()

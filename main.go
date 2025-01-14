@@ -113,5 +113,5 @@ func main() {
 	}
 	logger.Log.Info("Database connection closed")
 
-	logger.Log.Info("Fiber was successful shutdown")
+	logger.Log.Info("App was successful shutdown")
 }
