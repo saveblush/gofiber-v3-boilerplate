@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"os"
 	"os/signal"
@@ -22,6 +23,8 @@ import (
 // @in header
 // @name Authorization
 func main() {
+	flag.Parse()
+
 	// Init logger
 	logger.InitLogger()
 
@@ -97,11 +100,12 @@ func main() {
 	listenConfig := fiber.ListenConfig{
 		EnablePrefork: config.CF.HTTPServer.Prefork,
 	}
-	err = app.Listen(fmt.Sprintf(":%d", config.CF.App.Port), listenConfig)
+	addr := flag.String("addr", fmt.Sprintf(":%d", config.CF.App.Port), "http service address")
+	err = app.Listen(*addr, listenConfig)
 	if err != nil {
 		logger.Log.Panic(err)
 	}
-	logger.Log.Infof("Start server on port: %d ...", config.CF.App.Port)
+	logger.Log.Infof("Start server on port: %d ...", *addr)
 
 	// Cleanup tasks
 	<-serverShutdown
