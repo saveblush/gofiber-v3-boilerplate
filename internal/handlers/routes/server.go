@@ -13,8 +13,12 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/recover"
 	"github.com/gofiber/fiber/v3/middleware/requestid"
 
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/breaker"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/connection/sql"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils/logger"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/handlers/middlewares"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/models"
 )
 
 const (
@@ -28,8 +32,19 @@ const (
 	Timeout10s = 10 * time.Second
 )
 
+type Server struct {
+	*fiber.App
+}
+
 // NewServer new server
-func NewServer() *fiber.App {
+func NewServer() (*Server, error) {
+	// New source
+	err := newSource()
+	if err != nil {
+		return nil, err
+	}
+
+	// New fiber app
 	app := fiber.New(fiber.Config{
 		AppName:           config.CF.App.ProjectName,
 		ServerHeader:      config.CF.App.ProjectName,
@@ -69,8 +84,78 @@ func NewServer() *fiber.App {
 		middlewares.WrapError(),
 	)
 
-	// Setup the router
-	NewRouter(app)
+	// New router
+	newRouter(app)
 
-	return app
+	return &Server{app}, nil
+}
+
+// Close close server
+func (s *Server) Close() error {
+	// shutdown server
+	err := s.Shutdown()
+	if err != nil {
+		return err
+	}
+
+	// Cleanup tasks
+	logger.Log.Info("Running cleanup tasks...")
+
+	// Close db
+	if config.CF.Database.RelaySQL.Enable {
+		go sql.CloseConnection(sql.RelayDatabase)
+	}
+	logger.Log.Info("Database connection closed")
+
+	return nil
+}
+
+// newSource new source
+func newSource() error {
+	// Init Circuit Breaker
+	breaker.Init()
+
+	// Init connection database
+	err := newDatabase()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// newDatabase new connection database
+func newDatabase() error {
+	if config.CF.Database.RelaySQL.Enable {
+		configuration := &sql.Configuration{
+			Host:         config.CF.Database.RelaySQL.Host,
+			Port:         config.CF.Database.RelaySQL.Port,
+			Username:     config.CF.Database.RelaySQL.Username,
+			Password:     config.CF.Database.RelaySQL.Password,
+			DatabaseName: config.CF.Database.RelaySQL.DatabaseName,
+			DriverName:   config.CF.Database.RelaySQL.DriverName,
+			Charset:      config.CF.Database.RelaySQL.Charset,
+			MaxIdleConns: config.CF.Database.RelaySQL.MaxIdleConns,
+			MaxOpenConns: config.CF.Database.RelaySQL.MaxOpenConns,
+			MaxLifetime:  config.CF.Database.RelaySQL.MaxLifetime,
+		}
+		session, err := sql.InitConnection(configuration)
+		if err != nil {
+			return err
+		}
+		sql.RelayDatabase = session.Database
+
+		if !fiber.IsChild() {
+			session.Database.AutoMigrate(&models.Book{})
+		}
+	}
+
+	// Debug db
+	if !config.CF.App.Environment.Production() {
+		if config.CF.Database.RelaySQL.Enable {
+			sql.DebugRelayDatabase()
+		}
+	}
+
+	return nil
 }
