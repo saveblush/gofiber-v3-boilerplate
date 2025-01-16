@@ -1,7 +1,6 @@
 package cctx
 
 import (
-	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -9,7 +8,6 @@ import (
 	"github.com/gofiber/fiber/v3"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
-	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/generic"
 )
 
 const (
@@ -130,7 +128,7 @@ func setValue(paramValue reflect.Value, value string) {
 	}
 }
 
-func (c *Context) additionalQueryParser(i interface{}) {
+/*func (c *Context) additionalQueryParser(i interface{}) {
 	formValue := reflect.ValueOf(i)
 	if formValue.Kind() == reflect.Ptr {
 		formValue = formValue.Elem()
@@ -159,7 +157,7 @@ func (c *Context) additionalQueryParser(i interface{}) {
 			}
 		}
 	}
-}
+}*/
 
 // GetLanguage get language
 func (c *Context) GetLanguage() config.Language {
