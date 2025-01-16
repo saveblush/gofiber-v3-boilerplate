@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -84,31 +83,26 @@ func main() {
 
 	// Start app
 	app := routes.NewServer()
-
-	// Shutdown
-	exit, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	defer cancel()
-	serverShutdown := make(chan struct{})
-	go func() {
-		<-exit.Done()
-		logger.Log.Info("Gracefully shutting down...")
-		_ = app.ShutdownWithContext(exit)
-		serverShutdown <- struct{}{}
-	}()
-
-	// Listen
+	addr := flag.String("addr", fmt.Sprintf(":%d", config.CF.App.Port), "http service address")
 	listenConfig := fiber.ListenConfig{
 		EnablePrefork: config.CF.HTTPServer.Prefork,
 	}
-	addr := flag.String("addr", fmt.Sprintf(":%d", config.CF.App.Port), "http service address")
-	err = app.Listen(*addr, listenConfig)
-	if err != nil {
-		logger.Log.Panic(err)
-	}
-	logger.Log.Infof("Start server on port: %d ...", *addr)
+	go func() {
+		err = app.Listen(*addr, listenConfig)
+		if err != nil {
+			logger.Log.Panicf("App start error: %s", err)
+		}
+	}()
+
+	// Shutdown app
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+	<-sigChan
+
+	logger.Log.Info("Gracefully shutting down...")
+	_ = app.Shutdown()
 
 	// Cleanup tasks
-	<-serverShutdown
 	logger.Log.Info("Running cleanup tasks...")
 
 	// Close db
