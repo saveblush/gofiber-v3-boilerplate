@@ -13,6 +13,7 @@ require (
 	github.com/gofiber/fiber/v3 v3.0.0-beta.4
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/redis/go-redis/v9 v9.7.0
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/samber/lo v1.47.0
 	github.com/saveblush/gofiber3-contrib/jwt v0.1.0
 	github.com/saveblush/gofiber3-swagger v1.0.8

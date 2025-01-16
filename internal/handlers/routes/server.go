@@ -12,13 +12,16 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/pprof"
 	"github.com/gofiber/fiber/v3/middleware/recover"
 	"github.com/gofiber/fiber/v3/middleware/requestid"
+	"github.com/robfig/cron/v3"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/breaker"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/cctx"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/connection/sql"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils/logger"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/handlers/middlewares"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/models"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/book"
 )
 
 const (
@@ -32,12 +35,25 @@ const (
 	Timeout10s = 10 * time.Second
 )
 
-type Server struct {
+type server struct {
+	// fiber
 	*fiber.App
+
+	// cctx
+	cctx *cctx.Context
+
+	// config
+	config *config.Configs
+
+	// cron
+	cron *cron.Cron
+
+	// service
+	book book.Service
 }
 
 // NewServer new server
-func NewServer() (*Server, error) {
+func NewServer() (*server, error) {
 	// New source
 	err := newSource()
 	if err != nil {
@@ -87,27 +103,15 @@ func NewServer() (*Server, error) {
 	// New router
 	newRouter(app)
 
-	return &Server{app}, nil
-}
-
-// Close close server
-func (s *Server) Close() error {
-	// shutdown server
-	err := s.Shutdown()
-	if err != nil {
-		return err
+	sv := &server{
+		App:    app,
+		cctx:   &cctx.Context{},
+		config: &config.Configs{},
+		cron:   cron.New(),
+		book:   book.NewService(),
 	}
 
-	// Cleanup tasks
-	logger.Log.Info("Running cleanup tasks...")
-
-	// Close db
-	if config.CF.Database.RelaySQL.Enable {
-		go sql.CloseConnection(sql.RelayDatabase)
-	}
-	logger.Log.Info("Database connection closed")
-
-	return nil
+	return sv, nil
 }
 
 // newSource new source
@@ -156,6 +160,30 @@ func newDatabase() error {
 			sql.DebugRelayDatabase()
 		}
 	}
+
+	return nil
+}
+
+// Close close server
+func (s *server) Close() error {
+	// Shutdown server
+	err := s.Shutdown()
+	if err != nil {
+		return err
+	}
+
+	// Cleanup tasks
+	logger.Log.Info("Running cleanup tasks...")
+
+	// Close cron
+	go s.CronStop()
+	logger.Log.Info("Cron stoped")
+
+	// Close db
+	if s.config.Database.RelaySQL.Enable {
+		go sql.CloseConnection(sql.RelayDatabase)
+	}
+	logger.Log.Info("Database connection closed")
 
 	return nil
 }

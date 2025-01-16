@@ -20,6 +20,7 @@ type Service interface {
 	Create(c *cctx.Context, req *RequestCreate) (interface{}, error)
 	Update(c *cctx.Context, req *RequestUpdate) (interface{}, error)
 	Delete(c *cctx.Context, req *RequestID) error
+	Script(c *cctx.Context) error
 }
 
 type service struct {
@@ -106,6 +107,23 @@ func (s *service) Delete(c *cctx.Context, req *RequestID) error {
 	copier.Copy(data, &req)
 
 	err := s.repository.Delete(c.GetRelayDatabase(), data)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// test cronjob
+func (s *service) Script(c *cctx.Context) error {
+	req := &RequestUpdate{
+		RequestID: RequestID{ID: 2},
+		Name:      "อัพเดทจาก cronjob",
+	}
+	data := &models.Book{}
+	copier.Copy(data, req)
+
+	err := s.repository.Update(c.GetRelayDatabase(), data, data)
 	if err != nil {
 		return err
 	}

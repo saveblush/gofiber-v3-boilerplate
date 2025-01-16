@@ -43,11 +43,16 @@ func main() {
 	docs.SwaggerInfo.Host = fmt.Sprintf("%s%s", config.CF.Swagger.Host, config.CF.Swagger.BaseURL)
 	//docs.SwaggerInfo.Schemes = []string{"https", "http"}
 
-	// Start app
+	// New app
 	app, err := routes.NewServer()
 	if err != nil {
-		logger.Log.Panicf("new server error: %s", err)
+		logger.Log.Fatalf("new server error: %s", err)
 	}
+
+	// Start cron
+	app.CronStart()
+
+	// Start app
 	addr := flag.String("addr", fmt.Sprintf(":%d", config.CF.App.Port), "http service address")
 	listenConfig := fiber.ListenConfig{
 		EnablePrefork: config.CF.HTTPServer.Prefork,
@@ -55,7 +60,7 @@ func main() {
 	go func() {
 		err = app.Listen(*addr, listenConfig)
 		if err != nil {
-			logger.Log.Panicf("server start error: %s", err)
+			logger.Log.Fatalf("server start error: %s", err)
 		}
 	}()
 
