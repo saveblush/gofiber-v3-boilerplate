@@ -6,6 +6,7 @@ type RequestID struct {
 
 type Request struct {
 	ID   uint   `json:"id" query:"id"`
+	IDs  []uint `json:"ids" query:"ids"`
 	Name string `json:"name" query:"name"`
 }
 

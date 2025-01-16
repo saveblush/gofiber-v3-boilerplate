@@ -33,6 +33,10 @@ func (r *repository) query(db *gorm.DB, req *Request) *gorm.DB {
 		db = db.Where("id = ?", req.ID)
 	}
 
+	if !generic.IsEmpty(req.IDs) {
+		db = db.Where("id IN ?", req.IDs)
+	}
+
 	if !generic.IsEmpty(req.Name) {
 		db = db.Where("name = ?", req.Name)
 	}
