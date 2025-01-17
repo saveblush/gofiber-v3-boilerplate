@@ -17,6 +17,7 @@ import (
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/breaker"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/cctx"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/connection/cache"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/connection/sql"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils/logger"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/handlers/middlewares"
@@ -39,7 +40,7 @@ type server struct {
 	// fiber
 	*fiber.App
 
-	// cctx
+	// core context
 	cctx *cctx.Context
 
 	// config
@@ -54,12 +55,39 @@ type server struct {
 
 // NewServer new server
 func NewServer() (*server, error) {
-	// New source
-	err := newSource()
+	var err error
+
+	// Init database
+	err = initDatabase()
 	if err != nil {
 		return nil, err
 	}
 
+	// Init cache
+	err = initCache()
+	if err != nil {
+		return nil, err
+	}
+
+	// Init Circuit Breaker
+	breaker.Init()
+
+	// New app
+	app := newApp()
+
+	sv := &server{
+		App:    app,
+		cctx:   &cctx.Context{},
+		config: &config.Configs{},
+		cron:   cron.New(),
+		book:   book.NewService(),
+	}
+
+	return sv, nil
+}
+
+// newApp new fiber app
+func newApp() *fiber.App {
 	// New fiber app
 	app := fiber.New(fiber.Config{
 		AppName:           config.CF.App.ProjectName,
@@ -100,65 +128,52 @@ func NewServer() (*server, error) {
 		middlewares.WrapError(),
 	)
 
-	// New router
-	newRouter(app)
-
-	sv := &server{
-		App:    app,
-		cctx:   &cctx.Context{},
-		config: &config.Configs{},
-		cron:   cron.New(),
-		book:   book.NewService(),
-	}
-
-	return sv, nil
+	return app
 }
 
-// newSource new source
-func newSource() error {
-	// Init Circuit Breaker
-	breaker.Init()
-
-	// Init connection database
-	err := newDatabase()
+// initDatabase init connection database
+func initDatabase() error {
+	configuration := &sql.Configuration{
+		Host:         config.CF.Database.RelaySQL.Host,
+		Port:         config.CF.Database.RelaySQL.Port,
+		Username:     config.CF.Database.RelaySQL.Username,
+		Password:     config.CF.Database.RelaySQL.Password,
+		DatabaseName: config.CF.Database.RelaySQL.DatabaseName,
+		DriverName:   config.CF.Database.RelaySQL.DriverName,
+		Charset:      config.CF.Database.RelaySQL.Charset,
+		MaxIdleConns: config.CF.Database.RelaySQL.MaxIdleConns,
+		MaxOpenConns: config.CF.Database.RelaySQL.MaxOpenConns,
+		MaxLifetime:  config.CF.Database.RelaySQL.MaxLifetime,
+	}
+	session, err := sql.InitConnection(configuration)
 	if err != nil {
 		return err
+	}
+	sql.RelayDatabase = session.Database
+
+	if !fiber.IsChild() {
+		session.Database.AutoMigrate(&models.Book{})
+	}
+
+	// Debug db
+	if !config.CF.App.Environment.Production() {
+		sql.DebugRelayDatabase()
 	}
 
 	return nil
 }
 
-// newDatabase new connection database
-func newDatabase() error {
-	if config.CF.Database.RelaySQL.Enable {
-		configuration := &sql.Configuration{
-			Host:         config.CF.Database.RelaySQL.Host,
-			Port:         config.CF.Database.RelaySQL.Port,
-			Username:     config.CF.Database.RelaySQL.Username,
-			Password:     config.CF.Database.RelaySQL.Password,
-			DatabaseName: config.CF.Database.RelaySQL.DatabaseName,
-			DriverName:   config.CF.Database.RelaySQL.DriverName,
-			Charset:      config.CF.Database.RelaySQL.Charset,
-			MaxIdleConns: config.CF.Database.RelaySQL.MaxIdleConns,
-			MaxOpenConns: config.CF.Database.RelaySQL.MaxOpenConns,
-			MaxLifetime:  config.CF.Database.RelaySQL.MaxLifetime,
-		}
-		session, err := sql.InitConnection(configuration)
-		if err != nil {
-			return err
-		}
-		sql.RelayDatabase = session.Database
-
-		if !fiber.IsChild() {
-			session.Database.AutoMigrate(&models.Book{})
-		}
+// initCache init cache
+func initCache() error {
+	configuration := &cache.Configuration{
+		Host:     config.CF.Cache.Redis.Host,
+		Port:     config.CF.Cache.Redis.Port,
+		Password: config.CF.Cache.Redis.Password,
+		DB:       config.CF.Cache.Redis.DB,
 	}
-
-	// Debug db
-	if !config.CF.App.Environment.Production() {
-		if config.CF.Database.RelaySQL.Enable {
-			sql.DebugRelayDatabase()
-		}
+	err := cache.Init(configuration)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -171,18 +186,16 @@ func (s *server) Close() error {
 	if err != nil {
 		return err
 	}
+	logger.Log.Info("Server closed")
 
-	// Cleanup tasks
 	logger.Log.Info("Running cleanup tasks...")
 
 	// Close cron
-	go s.CronStop()
+	s.CronStop()
 	logger.Log.Info("Cron stoped")
 
 	// Close db
-	if s.config.Database.RelaySQL.Enable {
-		go sql.CloseConnection(sql.RelayDatabase)
-	}
+	sql.CloseConnection(sql.RelayDatabase)
 	logger.Log.Info("Database connection closed")
 
 	return nil

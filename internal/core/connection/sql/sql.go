@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/generic"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -22,7 +21,7 @@ var (
 var (
 	defaultMaxIdleConns = 10
 	defaultMaxOpenConns = 15
-	defaultMaxLifetime  = time.Hour
+	defaultMaxLifetime  = 15 * time.Minute
 )
 
 // gorm config
@@ -68,13 +67,13 @@ func InitConnection(cf *Configuration) (*Session, error) {
 	}
 
 	// set config connection pool
-	if generic.IsEmpty(cf.MaxIdleConns) {
+	if cf.MaxIdleConns == 0 {
 		cf.MaxIdleConns = defaultMaxIdleConns
 	}
-	if generic.IsEmpty(cf.MaxOpenConns) {
+	if cf.MaxOpenConns == 0 {
 		cf.MaxOpenConns = defaultMaxOpenConns
 	}
-	if generic.IsEmpty(cf.MaxLifetime) {
+	if cf.MaxLifetime == 0 {
 		cf.MaxLifetime = defaultMaxLifetime
 	}
 

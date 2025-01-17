@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"github.com/gofiber/fiber/v3"
 	swagger "github.com/saveblush/gofiber3-swagger"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
@@ -11,10 +10,10 @@ import (
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/system"
 )
 
-// newRouter new router
-func newRouter(app *fiber.App) {
+// InitRouter init router
+func (s *server) InitRouter() {
 	// api
-	api := app.Group(config.CF.App.ApiBaseUrl)
+	api := s.Group(config.CF.App.ApiBaseUrl)
 
 	// system
 	systemEndpoint := system.NewEndpoint()
@@ -50,5 +49,5 @@ func newRouter(app *fiber.App) {
 	bookApi.Delete("/:id", bookEndpoint.Delete)
 
 	// not found
-	app.Use(middlewares.Notfound())
+	s.Use(middlewares.Notfound())
 }

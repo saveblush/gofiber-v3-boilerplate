@@ -63,7 +63,6 @@ type DatabaseConfig struct {
 	MaxIdleConns int           `mapstructure:"MAX_IDLE_CONNS"`
 	MaxOpenConns int           `mapstructure:"MAX_OPEN_CONNS"`
 	MaxLifetime  time.Duration `mapstructure:"MAX_LIFE_TIME"`
-	Enable       bool          `mapstructure:"ENABLE"`
 }
 
 type UserPassConfig struct {

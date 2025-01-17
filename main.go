@@ -52,7 +52,10 @@ func main() {
 	// Start cron
 	app.CronStart()
 
-	// Start app
+	// Init router
+	app.InitRouter()
+
+	// Listen app
 	addr := flag.String("addr", fmt.Sprintf(":%d", config.CF.App.Port), "http service address")
 	listenConfig := fiber.ListenConfig{
 		EnablePrefork: config.CF.HTTPServer.Prefork,
@@ -70,4 +73,5 @@ func main() {
 	<-sigChan
 	logger.Log.Info("Gracefully shutting down...")
 	_ = app.Close()
+	logger.Log.Info("App was successful shutdown")
 }
