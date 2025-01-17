@@ -59,6 +59,7 @@ type Service interface {
 	Get(key string, value interface{}) error
 	GetKeys(pattern string) ([]string, error)
 	Delete(key string) error
+	Close() error
 }
 
 func (c *connection) Set(key string, value interface{}, expiredTime time.Duration) error {
@@ -108,6 +109,16 @@ func (c *connection) GetKeys(pattern string) ([]string, error) {
 
 func (c *connection) Delete(key string) error {
 	err := c.client.Del(c.ctx, key).Err()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Close close connection
+func (c *connection) Close() error {
+	err := c.client.Close()
 	if err != nil {
 		return err
 	}

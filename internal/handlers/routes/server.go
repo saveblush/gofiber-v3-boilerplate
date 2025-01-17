@@ -187,6 +187,10 @@ func (s *server) Close() error {
 	s.CronStop()
 	logger.Log.Info("Cron stoped")
 
+	// Close cache
+	cache.New().Close()
+	logger.Log.Info("Cache connection closed")
+
 	// Close db
 	sql.CloseConnection(sql.RelayDatabase)
 	logger.Log.Info("Database connection closed")
