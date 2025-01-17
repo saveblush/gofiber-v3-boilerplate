@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils/logger"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/book"
 )
 
 // CronStart cron start
@@ -24,7 +25,10 @@ func (s *server) CronStop() {
 
 // cronSchedule cron schedule
 func (s *server) cronSchedule() {
+	// book service
+	book := book.NewService()
+
 	s.cron.AddFunc("*/1 * * * *", func() {
-		s.book.Script(s.cctx)
+		book.Script(s.cctx)
 	})
 }

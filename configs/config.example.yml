@@ -44,7 +44,15 @@ DATABASE:
     MAX_IDLE_CONNS: 5
     MAX_OPEN_CONNS: 8
     MAX_LIFE_TIME: "5m"
-    ENABLE: true
+
+CACHE:
+  EXPIRE_TIME:
+    DEFAULT: 1h
+  REDIS:
+    HOST: "10.10.10.10"
+    PORT: 6379
+    PASSWORD: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    DB: 0
 
 HTML_TEMPLATE:
   SYSTEM_MAINTENANCE: "system_maintenance.html"

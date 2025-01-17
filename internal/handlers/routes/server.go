@@ -22,7 +22,6 @@ import (
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils/logger"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/handlers/middlewares"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/models"
-	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/book"
 )
 
 const (
@@ -48,9 +47,6 @@ type server struct {
 
 	// cron
 	cron *cron.Cron
-
-	// service
-	book book.Service
 }
 
 // NewServer new server
@@ -75,15 +71,12 @@ func NewServer() (*server, error) {
 	// New app
 	app := newApp()
 
-	sv := &server{
+	return &server{
 		App:    app,
 		cctx:   &cctx.Context{},
-		config: &config.Configs{},
+		config: config.CF,
 		cron:   cron.New(),
-		book:   book.NewService(),
-	}
-
-	return sv, nil
+	}, nil
 }
 
 // newApp new fiber app

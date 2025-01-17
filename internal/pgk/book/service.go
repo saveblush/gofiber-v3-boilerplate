@@ -2,6 +2,7 @@ package book
 
 import (
 	"errors"
+	"fmt"
 
 	"gorm.io/gorm"
 
@@ -9,7 +10,13 @@ import (
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/cctx"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/connection/cache"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/generic"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/models"
+)
+
+var (
+	keyCache = "user"
 )
 
 // service interface
@@ -26,12 +33,14 @@ type Service interface {
 type service struct {
 	config     *config.Configs
 	repository Repository
+	cache      cache.Service
 }
 
 func NewService() Service {
 	return &service{
 		config:     config.CF,
 		repository: NewRepository(),
+		cache:      cache.New(),
 	}
 }
 
@@ -61,14 +70,24 @@ func (s *service) FindAll(c *cctx.Context, req *Request) (interface{}, error) {
 
 // FindByID find by id
 func (s *service) FindByID(c *cctx.Context, req *RequestID) (interface{}, error) {
+	key := fmt.Sprintf("%s-%d", keyCache, req.ID)
 	res := &models.Book{}
-	err := s.repository.FindByID(c.GetRelayDatabase(), req.ID, res)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return map[string]interface{}{}, nil
-	}
+	err := s.cache.Get(key, res)
 
+	// ถ้าไม่เจอ cache
 	if err != nil {
-		return nil, err
+		err := s.repository.FindByID(c.GetRelayDatabase(), req.ID, res)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return map[string]interface{}{}, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+
+		// เก็บใน cache
+		if !generic.IsEmpty(req) {
+			_ = s.cache.Set(key, res, s.config.Cache.ExprieTime.Default)
+		}
 	}
 
 	return res, nil

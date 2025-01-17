@@ -52,7 +52,7 @@ type Configuration struct {
 	MaxLifetime  time.Duration
 }
 
-// InitConnectionMysql open initialize a new db connection.
+// InitConnectionMysql open initialize a new db connection
 func InitConnection(cf *Configuration) (*Session, error) {
 	var db *gorm.DB
 	var err error

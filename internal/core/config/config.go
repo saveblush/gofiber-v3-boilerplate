@@ -123,6 +123,18 @@ type Configs struct {
 		RelaySQL DatabaseConfig `mapstructure:"RELAY_SQL"`
 	} `mapstructure:"DATABASE"`
 
+	Cache struct {
+		ExprieTime struct {
+			Default time.Duration `mapstructure:"DEFAULT"`
+		} `mapstructure:"EXPIRE_TIME"`
+		Redis struct {
+			Host     string `mapstructure:"HOST"`
+			Port     int    `mapstructure:"PORT"`
+			Password string `mapstructure:"PASSWORD"`
+			DB       int    `mapstructure:"DB"`
+		} `mapstructure:"REDIS"`
+	} `mapstructure:"CACHE"`
+
 	HTMLTemplate struct {
 		SystemMaintenance string `mapstructure:"SYSTEM_MAINTENANCE"`
 	} `mapstructure:"HTML_TEMPLATE"`
