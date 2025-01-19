@@ -46,7 +46,7 @@ func main() {
 	// New app
 	app, err := routes.NewServer()
 	if err != nil {
-		logger.Log.Fatalf("new server error: %s", err)
+		logger.Log.Panicf("new server error: %s", err)
 	}
 
 	// Start cron
@@ -63,7 +63,7 @@ func main() {
 	go func() {
 		err = app.Listen(*addr, listenConfig)
 		if err != nil {
-			logger.Log.Fatalf("server start error: %s", err)
+			logger.Log.Panicf("server start error: %s", err)
 		}
 	}()
 
