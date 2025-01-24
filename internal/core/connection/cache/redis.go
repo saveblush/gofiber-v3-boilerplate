@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bytedance/sonic"
+	"github.com/goccy/go-json"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -63,7 +63,7 @@ type Service interface {
 }
 
 func (c *connection) Set(key string, value interface{}, expiredTime time.Duration) error {
-	data, errMar := sonic.Marshal(&value)
+	data, errMar := json.Marshal(&value)
 	if errMar != nil {
 		return errMar
 	}
@@ -86,7 +86,7 @@ func (c *connection) Get(key string, value interface{}) error {
 		return err
 	}
 
-	errMar := sonic.Unmarshal([]byte(val), &value)
+	errMar := json.Unmarshal([]byte(val), &value)
 	if errMar != nil {
 		return errMar
 	}

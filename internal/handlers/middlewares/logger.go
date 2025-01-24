@@ -8,7 +8,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/bytedance/sonic"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
@@ -33,7 +33,7 @@ func Logger() fiber.Handler {
 		var b []byte
 		parameters := c.Locals(cctx.ParametersKey)
 		if parameters != nil {
-			b, _ = sonic.Marshal(&parameters)
+			b, _ = json.Marshal(&parameters)
 			for _, f := range []string{"Password", "password"} {
 				if res := gjson.GetBytes(b, f); res.Exists() {
 					b, _ = sjson.SetBytes(b, f, "**********")

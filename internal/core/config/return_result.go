@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/bytedance/sonic"
 	"github.com/fsnotify/fsnotify"
+	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
 	"github.com/spf13/viper"
 
@@ -120,16 +120,16 @@ type LocaleDescription struct {
 // MarshalJSON marshall json
 func (ld LocaleDescription) MarshalJSON() ([]byte, error) {
 	if ld.Locale == LanguageTH {
-		return sonic.Marshal(ld.TH)
+		return json.Marshal(&ld.TH)
 	}
 
-	return sonic.Marshal(ld.EN)
+	return json.Marshal(&ld.EN)
 }
 
 // UnmarshalJSON unmarshal json
 func (ld *LocaleDescription) UnmarshalJSON(data []byte) error {
 	var res string
-	err := sonic.Unmarshal(data, &res)
+	err := json.Unmarshal(data, &res)
 	if err != nil {
 		return err
 	}
@@ -159,7 +159,7 @@ func InitReturnResult() error {
 
 	v.OnConfigChange(func(e fsnotify.Event) {
 		logger.Log.Infof("config file changed: %s", e.Name)
-		if err := v.Unmarshal(CF); err != nil {
+		if err := v.Unmarshal(&CF); err != nil {
 			logger.Log.Errorf("binding config error: %s", err)
 		}
 	})

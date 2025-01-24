@@ -3,7 +3,6 @@ package routes
 import (
 	swagger "github.com/saveblush/gofiber3-swagger"
 
-	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/handlers/middlewares"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/book"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/healthcheck"
@@ -13,7 +12,7 @@ import (
 // InitRouter init router
 func (s *server) InitRouter() {
 	// api
-	api := s.Group(config.CF.App.ApiBaseUrl)
+	api := s.Group(s.config.App.ApiBaseUrl)
 
 	// system
 	systemEndpoint := system.NewEndpoint()
@@ -34,7 +33,7 @@ func (s *server) InitRouter() {
 	v1 := api.Group("/v1")
 
 	// swagger
-	if config.CF.Swagger.Enable {
+	if s.config.Swagger.Enable {
 		v1.Get("/swagger/*", swagger.HandlerDefault)
 	}
 

@@ -8,12 +8,9 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/bytedance/sonic"
 	"github.com/fsnotify/fsnotify"
-	"github.com/go-playground/locales/en"
-	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
-	en_translations "github.com/go-playground/validator/v10/translations/en"
+	"github.com/goccy/go-json"
 	"github.com/spf13/viper"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils/logger"
@@ -71,9 +68,9 @@ type UserPassConfig struct {
 }
 
 type Configs struct {
-	UniversalTranslator *ut.UniversalTranslator
-	Validator           *validator.Validate
-	Path                string
+	//UniversalTranslator *ut.UniversalTranslator
+	Validator *validator.Validate
+	Path      string
 
 	App struct {
 		AvailableStatus string           // สถานะปิด/เปิดระบบ [on/off]
@@ -191,7 +188,7 @@ func bindingConfig(vp *viper.Viper, cf *Configs) error {
 		return err
 	}
 
-	en := en.New()
+	/*en := en.New()
 	cf.UniversalTranslator = ut.New(en, en)
 	enTrans, _ := cf.UniversalTranslator.GetTranslator("en")
 	if err := en_translations.RegisterDefaultTranslations(validate, enTrans); err != nil {
@@ -205,7 +202,7 @@ func bindingConfig(vp *viper.Viper, cf *Configs) error {
 		field := strings.ToLower(fe.Field())
 		t, _ := ut.T("maxString", field, fe.Param())
 		return t
-	})
+	})*/
 
 	cf.Validator = validate
 
@@ -279,7 +276,7 @@ func initConfigAvailable() error {
 // SetConfigAvailableStatus set config available status
 // สร้าง config สถานะ ปิด/เปิด ระบบ
 func (cf *Configs) SetConfigAvailableStatus(status string) error {
-	d, _ := sonic.Marshal(AvailableConfig{
+	d, _ := json.Marshal(&AvailableConfig{
 		Status: status,
 	})
 	p := fmt.Sprintf("%s/%s", filePath, fileNameConfigAvailableStatus)

@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/bytedance/sonic"
+	"github.com/goccy/go-json"
 )
 
 // Equal equal
@@ -52,12 +52,12 @@ func IsEmpty(i interface{}) bool {
 
 // ConvertInterfaceToStruct convert interface to struct
 func ConvertInterfaceToStruct(data, value interface{}) error {
-	b, err := sonic.Marshal(&data)
+	b, err := json.Marshal(&data)
 	if err != nil {
 		return err
 	}
 
-	err = sonic.Unmarshal(b, &value)
+	err = json.Unmarshal(b, &value)
 	if err != nil {
 		return err
 	}
