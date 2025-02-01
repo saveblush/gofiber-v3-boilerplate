@@ -69,7 +69,7 @@ USER gouser
 
 ENV TZ=Asia/Bangkok
 
-EXPOSE 8000
+EXPOSE 8456
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["/app/main"]
