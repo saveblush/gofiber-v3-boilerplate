@@ -2,7 +2,7 @@
 
 | lib | 3rd Party |
 | ---- | ---- | 
-| Server | [gofiber](https://github.com/gofiber/fiber) |
+| Server | [gofiber](https://github.com/gofiber/fiber?target=_blank) |
 | Json | [go-json](https://github.com/goccy/go-json)|
 | Redis | [go-redis](https://github.com/redis/go-redis) |
 | DB | [gorm](https://github.com/go-gorm/gorm) |
@@ -13,3 +13,4 @@
 | Swagger | [swag](https://github.com/swaggo/swag) |
 | Circuit Breaker | [hystrix-go](https://github.com/afex/hystrix-go) |
 | Copier | [copier](https://github.com/jinzhu/copier) |
+
