@@ -4,6 +4,30 @@ json_duplicate_or_invalid_format:
     en: "Json field duplicate or invalid format. Please try again"
     th: "Json มีคีย์ซ้ำกันหรือรูปแบบฟอร์เมตผิด กรุณาลองใหม่อีกครั้ง"
 
+invalid_username:
+  code: 1001
+  localization:
+    en: "Sorry, your username is incorrect. Please try again"
+    th: "ขออภัย รหัสผู้ใช้งานไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง"
+
+invalid_password:
+  code: 1002
+  localization:
+    en: "Sorry, your password is incorrect. Please try again"
+    th: "ขออภัย รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง"
+
+invalid_current_password:
+  code: 1002
+  localization:
+    en: "Sorry, your current password is incorrect. Please try again"
+    th: "ขออภัย รหัสผ่านปัจจุบันไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง"
+
+invalid_pin:
+  code: 1002
+  localization:
+    en: "Sorry, your pin is incorrect. Please try again"
+    th: "ขออภัย รหัส Pin ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง"
+
 invalid_token:
   code: 1001
   localization:
@@ -11,7 +35,7 @@ invalid_token:
     th: "โทเค็นไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง"
 
 invalid_permission_role:
-  code: 1002
+  code: 1003
   localization:
     en: "Sorry, your permission cannot do the transaction. Please try again"
     th: "ขออภัย สิทธิ์ของคุณไม่สามารถทำรายการดังกล่าวได้ กรุณาลองใหม่อีกครั้ง"

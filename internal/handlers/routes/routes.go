@@ -4,6 +4,7 @@ import (
 	swagger "github.com/saveblush/gofiber3-swagger"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/handlers/middlewares"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/auth"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/book"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/healthcheck"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/system"
@@ -37,8 +38,17 @@ func (s *server) InitRouter() {
 		v1.Get("/swagger/*", swagger.HandlerDefault)
 	}
 
-	v1.Get("/healthcheck", healthCheckEndpoint.HealthCheck)
+	// auth
+	authEndpoint := auth.NewEndpoint()
+	v1.Post("/login", authEndpoint.Login, middlewares.AuthorizationRequired())
+	v1.Post("/logout", authEndpoint.Logout, middlewares.AuthorizationRequired())
+	v1.Get("/me", authEndpoint.Me, middlewares.AuthorizationRequired())
 
+	authApi := v1.Group("auth")
+	authApi.Use(middlewares.AuthorizationRequired())
+	authApi.Post("/refreshtoken", authEndpoint.RefreshToken)
+
+	// book
 	bookEndpoint := book.NewEndpoint()
 	bookApi := v1.Group("book", middlewares.AuthorizationRequired())
 	bookApi.Get("", bookEndpoint.Find)

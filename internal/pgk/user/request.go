@@ -1,5 +1,8 @@
 package user
 
 type Request struct {
-	Name string `json:"name" query:"name"`
+	UserID     string `json:"user_id"`
+	Userlevel  string `json:"user_level"`
+	EmpID      string `json:"emp_id"`
+	UserStatus []int  `json:"user_status"`
 }

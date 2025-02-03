@@ -4,7 +4,7 @@ type Request struct {
 	UserID    string `json:"user_id"`
 	UserLevel string `json:"user_level"`
 	EmpID     string `json:"emp_id"`
-	LogId     string `json:"log_id"` // id log connect
+	SessionID string `json:"session_id"`
 }
 
 type RequestRefresh struct {

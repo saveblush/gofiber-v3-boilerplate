@@ -92,6 +92,10 @@ func (rs Result) HTTPStatusCode() int {
 // ReturnResult return result model
 type ReturnResult struct {
 	JSONDuplicateOrInvalidFormat Result `mapstructure:"json_duplicate_or_invalid_format"`
+	InvalidUsername              Result `mapstructure:"invalid_username"`
+	InvalidPassword              Result `mapstructure:"invalid_password"`
+	InvalidCurrentPassword       Result `mapstructure:"invalid_current_password"`
+	InvalidPin                   Result `mapstructure:"invalid_pin"`
 	InvalidToken                 Result `mapstructure:"invalid_token"`
 	InvalidPermissionRole        Result `mapstructure:"invalid_permission_role"`
 	TokenNotFound                Result `mapstructure:"token_not_found"`

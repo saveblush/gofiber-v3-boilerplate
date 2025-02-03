@@ -12,7 +12,8 @@ var Log *zap.SugaredLogger
 // InitLogger init logger
 func InitLogger() {
 	lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl < zapcore.ErrorLevel
+		return lvl < zapcore.InvalidLevel
+		//return lvl < zapcore.ErrorLevel
 	})
 
 	encoderConfig := zap.NewProductionEncoderConfig()
