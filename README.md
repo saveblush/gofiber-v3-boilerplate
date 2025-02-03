@@ -2,7 +2,7 @@
 
 | lib | 3rd Party |
 | ---- | ---- | 
-| Server | [gofiber](https://github.com/gofiber/fiber){:target="_blank"} |
+| Server | [gofiber](https://github.com/gofiber/fiber) |
 | Json | [go-json](https://github.com/goccy/go-json)|
 | Redis | [go-redis](https://github.com/redis/go-redis) |
 | DB | [gorm](https://github.com/go-gorm/gorm) |
