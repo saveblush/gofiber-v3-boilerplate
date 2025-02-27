@@ -14,14 +14,14 @@ var (
 )
 
 var (
-	// RelayDatabase Database global variable database `relay`
-	RelayDatabase = &gorm.DB{}
+	// Database global variable
+	Database = &gorm.DB{}
 )
 
 var (
 	defaultMaxIdleConns = 10
-	defaultMaxOpenConns = 15
-	defaultMaxLifetime  = 15 * time.Minute
+	defaultMaxOpenConns = 30
+	defaultMaxLifetime  = time.Minute
 )
 
 // gorm config
@@ -110,7 +110,7 @@ func CloseConnection(db *gorm.DB) error {
 	return nil
 }
 
-// DebugRelayDatabase set debug sql
-func DebugRelayDatabase() {
-	RelayDatabase = RelayDatabase.Debug()
+// DebugDatabase set debug sql
+func DebugDatabase() {
+	Database = Database.Debug()
 }

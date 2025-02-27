@@ -46,7 +46,7 @@ func NewService() Service {
 
 // Find find
 func (s *service) Find(c *cctx.Context, req *Request) (interface{}, error) {
-	res, err := s.repository.Find(c.GetRelayDatabase(), req)
+	res, err := s.repository.Find(c.GetDatabase(), req)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return map[string]interface{}{}, nil
 	}
@@ -60,7 +60,7 @@ func (s *service) Find(c *cctx.Context, req *Request) (interface{}, error) {
 
 // FindAll find all
 func (s *service) FindAll(c *cctx.Context, req *Request) (interface{}, error) {
-	res, err := s.repository.FindAll(c.GetRelayDatabase(), req)
+	res, err := s.repository.FindAll(c.GetDatabase(), req)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (s *service) FindByID(c *cctx.Context, req *RequestID) (interface{}, error)
 
 	// ถ้าไม่เจอ cache
 	if err != nil {
-		err := s.repository.FindByID(c.GetRelayDatabase(), req.ID, res)
+		err := s.repository.FindByID(c.GetDatabase(), req.ID, res)
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return map[string]interface{}{}, nil
 		}
@@ -99,7 +99,7 @@ func (s *service) Create(c *cctx.Context, req *RequestCreate) (interface{}, erro
 		Name: req.Name,
 	}
 
-	err := s.repository.Create(c.GetRelayDatabase(), data)
+	err := s.repository.Create(c.GetDatabase(), data)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +112,7 @@ func (s *service) Update(c *cctx.Context, req *RequestUpdate) (interface{}, erro
 	data := &models.Book{}
 	copier.Copy(data, &req)
 
-	err := s.repository.Update(c.GetRelayDatabase(), data, data)
+	err := s.repository.Update(c.GetDatabase(), data, data)
 	if err != nil {
 		return nil, err
 	}
@@ -125,7 +125,7 @@ func (s *service) Delete(c *cctx.Context, req *RequestID) error {
 	data := &models.Book{}
 	copier.Copy(data, &req)
 
-	err := s.repository.Delete(c.GetRelayDatabase(), data)
+	err := s.repository.Delete(c.GetDatabase(), data)
 	if err != nil {
 		return err
 	}
@@ -142,7 +142,7 @@ func (s *service) Script(c *cctx.Context) error {
 	data := &models.Book{}
 	copier.Copy(data, req)
 
-	err := s.repository.Update(c.GetRelayDatabase(), data, data)
+	err := s.repository.Update(c.GetDatabase(), data, data)
 	if err != nil {
 		return err
 	}

@@ -130,10 +130,10 @@ func initDatabase() error {
 	if err != nil {
 		return err
 	}
-	sql.RelayDatabase = session.Database
+	sql.Database = session.Database
 
 	if !fiber.IsChild() {
-		sql.RelayDatabase.AutoMigrate(
+		sql.Database.AutoMigrate(
 			&models.User{},
 			&models.AuthLogLogin{},
 			&models.Book{},
@@ -142,7 +142,7 @@ func initDatabase() error {
 
 	// Debug db
 	if !config.CF.App.Environment.Production() {
-		sql.DebugRelayDatabase()
+		sql.DebugDatabase()
 	}
 
 	return nil
@@ -166,7 +166,7 @@ func initCache() error {
 
 // closeDatabase close connection database
 func closeDatabase() error {
-	sql.CloseConnection(sql.RelayDatabase)
+	sql.CloseConnection(sql.Database)
 
 	return nil
 }

@@ -53,7 +53,7 @@ func (s *service) getLogin(c *cctx.Context, req *RequestLogLogin) (*models.UserL
 		ConnectType:   "login",
 		ConnectResult: "success",
 	}
-	sessionID, err := s.repository.CreateLogLogin(c.GetRelayDatabase(), dataLog)
+	sessionID, err := s.repository.CreateLogLogin(c.GetDatabase(), dataLog)
 	if err != nil {
 		logger.Log.Error("create log login error: %s", err)
 		return nil, err
@@ -65,7 +65,7 @@ func (s *service) getLogin(c *cctx.Context, req *RequestLogLogin) (*models.UserL
 		ConnectIP:     c.GetClientIP(),
 		ConnectDevice: c.GetClientUserAgent(),
 	}
-	err = s.repository.UpdateLastLogin(c.GetRelayDatabase(), dataLast)
+	err = s.repository.UpdateLastLogin(c.GetDatabase(), dataLast)
 	if err != nil {
 		logger.Log.Error("update last login error: %s", err)
 		return nil, err
@@ -140,7 +140,7 @@ func (s *service) Login(c *cctx.Context, req *RequestLogin) (interface{}, error)
 			ConnectType:   "login",
 			ConnectResult: "fail",
 		}
-		_, err := s.repository.CreateLogLogin(c.GetRelayDatabase(), dataLog)
+		_, err := s.repository.CreateLogLogin(c.GetDatabase(), dataLog)
 		if err != nil {
 			logger.Log.Error("create log login error: %s", err)
 			return nil, err
@@ -188,7 +188,7 @@ func (s *service) Logout(c *cctx.Context) error {
 		ConnectType:   "logout",
 		ConnectResult: "success",
 	}
-	_, err = s.repository.CreateLogLogin(c.GetRelayDatabase(), dataLog)
+	_, err = s.repository.CreateLogLogin(c.GetDatabase(), dataLog)
 	if err != nil {
 		logger.Log.Errorf("create log logout error: %s", err)
 		return err

@@ -55,8 +55,6 @@ RUN GOARCH=$(echo "$TARGETPLATFORM" | cut -d'/' -f2) go build \
 
 # Production, final image to reduce size
 FROM scratch AS runner
-#FROM alpine:3.21.2 AS runner
-#RUN apk --no-cache add dumb-init
 WORKDIR /app
 
 ## Copy os bundle from the builder

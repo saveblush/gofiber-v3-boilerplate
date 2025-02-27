@@ -26,7 +26,7 @@ func NewService() Service {
 
 // Find find
 func (s *service) Find(c *cctx.Context, req *Request) (*models.User, error) {
-	res, err := s.repository.Find(c.GetRelayDatabase(), req)
+	res, err := s.repository.Find(c.GetDatabase(), req)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func (s *service) Find(c *cctx.Context, req *Request) (*models.User, error) {
 
 // FindAll find all
 func (s *service) FindAll(c *cctx.Context, req *Request) ([]*models.User, error) {
-	res, err := s.repository.FindAll(c.GetRelayDatabase(), req)
+	res, err := s.repository.FindAll(c.GetDatabase(), req)
 	if err != nil {
 		return nil, err
 	}

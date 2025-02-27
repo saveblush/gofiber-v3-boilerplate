@@ -6,7 +6,7 @@ import (
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/connection/sql"
 )
 
-// GetRelayDatabase get connection database `ralay`
-func (c *Context) GetRelayDatabase() *gorm.DB {
-	return sql.RelayDatabase
+// GetDatabase get connection database`
+func (c *Context) GetDatabase() *gorm.DB {
+	return sql.Database
 }
