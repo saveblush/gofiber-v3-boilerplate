@@ -21,7 +21,7 @@ func openPostgres(cf *Configuration) (*gorm.DB, error) {
 	)
 
 	return gorm.Open(postgres.New(postgres.Config{
-		DSN:                  dsn,
-		PreferSimpleProtocol: true, // disables implicit prepared statement usage
+		DSN:                 dsn,
+		WithoutQuotingCheck: true,
 	}), defaultConfig)
 }

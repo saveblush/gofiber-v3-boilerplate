@@ -1,7 +1,6 @@
 package sql
 
 import (
-	"database/sql"
 	"time"
 
 	"gorm.io/gorm"
@@ -26,16 +25,16 @@ var (
 
 // gorm config
 var defaultConfig = &gorm.Config{
-	PrepareStmt:          true,
-	DisableAutomaticPing: true,
-	QueryFields:          true,
-	Logger:               logger.Default.LogMode(logger.Error),
+	PrepareStmt:            true,
+	SkipDefaultTransaction: true,
+	DisableAutomaticPing:   true,
+	QueryFields:            true,
+	Logger:                 logger.Default.LogMode(logger.Error),
 }
 
 // Session session
 type Session struct {
 	Database *gorm.DB
-	Conn     *sql.DB
 }
 
 // Configuration config mysql
@@ -67,13 +66,13 @@ func InitConnection(cf *Configuration) (*Session, error) {
 	}
 
 	// set config connection pool
-	if cf.MaxIdleConns == 0 {
+	if cf.MaxIdleConns > 0 {
 		cf.MaxIdleConns = defaultMaxIdleConns
 	}
-	if cf.MaxOpenConns == 0 {
+	if cf.MaxOpenConns > 0 {
 		cf.MaxOpenConns = defaultMaxOpenConns
 	}
-	if cf.MaxLifetime == 0 {
+	if cf.MaxLifetime > 0 {
 		cf.MaxLifetime = defaultMaxLifetime
 	}
 
@@ -92,7 +91,7 @@ func InitConnection(cf *Configuration) (*Session, error) {
 		return nil, err
 	}
 
-	return &Session{Database: db, Conn: sqlDB}, nil
+	return &Session{Database: db}, nil
 }
 
 // CloseConnection close connection db
