@@ -4,7 +4,7 @@ APP:
   VERSION: "0.1.0"
   WEB_BASE_URL: ""
   API_BASE_URL: "/api" 
-  PORT: 8000
+  PORT: 8456
   ENVIRONMENT: "prod" #develop, prod
   ISSUER: "gofiber-v3-boilerplate"
   SOURCES:
@@ -22,7 +22,7 @@ SWAGGER:
   TITLE: "Go Fiber v3 Boilerplate API Docs"
   DESCRIPTION: ""
   VERSION: "1.0"
-  HOST: "localhost:8000"
+  HOST: "localhost:8456"
   BASE_URL: "/api/v1"
   ENABLE: true
 
