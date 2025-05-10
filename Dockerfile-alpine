@@ -42,8 +42,8 @@ RUN swag init --md ./docs --parseGoList --parseDependency -g main.go
 
 ## Build app
 RUN GOARCH=$(echo "$TARGETPLATFORM" | cut -d'/' -f2) go build \
-   -ldflags="-w -s" \
-   -o main .
+    -ldflags="-w -s" \
+    -o main .
 
 
 # Production, final image to reduce size

@@ -31,13 +31,13 @@ func main() {
 	// Init configuration
 	err := config.InitConfig()
 	if err != nil {
-		logger.Log.Fatalf("init configuration error: %s", err)
+		logger.Log.Panicf("init configuration error: %s", err)
 	}
 
 	// Init return result
 	err = config.InitReturnResult()
 	if err != nil {
-		logger.Log.Fatalf("init return result error: %s", err)
+		logger.Log.Panicf("init return result error: %s", err)
 	}
 
 	// Set swagger info
@@ -50,13 +50,13 @@ func main() {
 	// Init database
 	err = initDatabase()
 	if err != nil {
-		logger.Log.Fatalf("init database error: %s", err)
+		logger.Log.Panicf("init database error: %s", err)
 	}
 
 	// Init cache
 	err = initCache()
 	if err != nil {
-		logger.Log.Fatalf("init cache error: %s", err)
+		logger.Log.Panicf("init cache error: %s", err)
 	}
 
 	// Init Circuit Breaker
@@ -65,7 +65,7 @@ func main() {
 	// New app
 	app, err := routes.NewServer()
 	if err != nil {
-		logger.Log.Fatalf("new server error: %s", err)
+		logger.Log.Panicf("new server error: %s", err)
 	}
 
 	// Start cron
@@ -82,7 +82,7 @@ func main() {
 	go func() {
 		err = app.Listen(*addr, listenConfig)
 		if err != nil {
-			logger.Log.Fatalf("server start error: %s", err)
+			logger.Log.Panicf("server start error: %s", err)
 		}
 	}()
 
