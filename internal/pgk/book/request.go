@@ -1,5 +1,7 @@
 package book
 
+import "github.com/saveblush/gofiber-v3-boilerplate/internal/models"
+
 type RequestID struct {
 	ID uint `json:"-" path:"id" form:"id" query:"id" validate:"required"`
 }
@@ -8,6 +10,13 @@ type Request struct {
 	ID   uint   `json:"id" query:"id"`
 	IDs  []uint `json:"ids" query:"ids"`
 	Name string `json:"name" query:"name"`
+}
+
+type RequestPage struct {
+	ID   uint   `json:"id" query:"id"`
+	IDs  []uint `json:"ids" query:"ids"`
+	Name string `json:"name" query:"name"`
+	models.PageForm
 }
 
 type RequestCreate struct {

@@ -36,7 +36,7 @@ func NewEndpoint() Endpoint {
 // @Accept json
 // @Produce json
 // @Param Accept-Language header string false "(en, th)" default(th)
-// @Param Request body Request true "Login"
+// @Param Request body RequestLogin true "Body for login"
 // @Success 200 {object} models.UserLogin
 // @Failure 400 {object} models.Message
 // @Failure 401 {object} models.Message

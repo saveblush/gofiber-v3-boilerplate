@@ -10,6 +10,7 @@ import (
 // endpoint interface
 type Endpoint interface {
 	Find(c fiber.Ctx) error
+	FindAllPage(c fiber.Ctx) error
 	FindByID(c fiber.Ctx) error
 	Create(c fiber.Ctx) error
 	Update(c fiber.Ctx) error
@@ -36,7 +37,8 @@ func NewEndpoint() Endpoint {
 // @Accept json
 // @Produce json
 // @Param Accept-Language header string false "(en, th)" default(th)
-// @Success 200 {object} models.Book
+// @Param Request query Request true "query for get all"
+// @Success 200 {array} models.Book
 // @Failure 400 {object} models.Message
 // @Failure 401 {object} models.Message
 // @Failure 404 {object} models.Message
@@ -48,11 +50,30 @@ func (ep *endpoint) Find(c fiber.Ctx) error {
 }
 
 // @Tags Book
-// @Summary Get book
-// @Description Get book
+// @Summary Get book with page
+// @Description Get book with page
 // @Accept json
 // @Produce json
 // @Param Accept-Language header string false "(en, th)" default(th)
+// @Param Request query RequestPage true "query for get all"
+// @Success 200 {object} models.Page
+// @Failure 400 {object} models.Message
+// @Failure 401 {object} models.Message
+// @Failure 404 {object} models.Message
+// @Failure 410 {object} models.Message
+// @Security ApiKeyAuth
+// @Router /book/list [get]
+func (ep *endpoint) FindAllPage(c fiber.Ctx) error {
+	return handlers.ResponseObject(c, ep.service.FindAllPage, &RequestPage{})
+}
+
+// @Tags Book
+// @Summary Get book by id
+// @Description Get book by id
+// @Accept json
+// @Produce json
+// @Param Accept-Language header string false "(en, th)" default(th)
+// @Param id path uint true "ID"
 // @Success 200 {object} models.Book
 // @Failure 400 {object} models.Message
 // @Failure 401 {object} models.Message
@@ -70,6 +91,7 @@ func (ep *endpoint) FindByID(c fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param Accept-Language header string false "(en, th)" default(th)
+// @Param Request body RequestCreate true "Body for create"
 // @Success 200 {object} models.Book
 // @Failure 400 {object} models.Message
 // @Failure 401 {object} models.Message
@@ -87,13 +109,15 @@ func (ep *endpoint) Create(c fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param Accept-Language header string false "(en, th)" default(th)
+// @Param id path uint true "ID"
+// @Param Request body RequestUpdate true "Body for update"
 // @Success 200 {object} models.Book
 // @Failure 400 {object} models.Message
 // @Failure 401 {object} models.Message
 // @Failure 404 {object} models.Message
 // @Failure 410 {object} models.Message
 // @Security ApiKeyAuth
-// @Router /book/:id [put]
+// @Router /book/{id} [put]
 func (ep *endpoint) Update(c fiber.Ctx) error {
 	return handlers.ResponseObject(c, ep.service.Update, &RequestUpdate{})
 }
@@ -104,13 +128,14 @@ func (ep *endpoint) Update(c fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param Accept-Language header string false "(en, th)" default(th)
-// @Success 200 {object} models.Book
+// @Param id path uint true "ID"
+// @Success 200 {object} models.Message
 // @Failure 400 {object} models.Message
 // @Failure 401 {object} models.Message
 // @Failure 404 {object} models.Message
 // @Failure 410 {object} models.Message
 // @Security ApiKeyAuth
-// @Router /book/:id [delete]
+// @Router /book/{id} [delete]
 func (ep *endpoint) Delete(c fiber.Ctx) error {
 	return handlers.ResponseSuccess(c, ep.service.Delete, &RequestID{})
 }
