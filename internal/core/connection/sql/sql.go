@@ -1,6 +1,7 @@
 package sql
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils"
@@ -95,6 +96,11 @@ func InitConnection(cf *Configuration) (*Session, error) {
 	sqlDB.SetMaxIdleConns(cf.MaxIdleConns)
 	sqlDB.SetMaxOpenConns(cf.MaxOpenConns)
 	sqlDB.SetConnMaxLifetime(cf.MaxLifetime)
+
+	fmt.Printf("%s \n", "--------------------------------------------------")
+	fmt.Printf("DB Stats [host: %s dbname: %s]\n", cf.Host, cf.DatabaseName)
+	fmt.Printf("MaxOpenConnections: %v\n", sqlDB.Stats().MaxOpenConnections)
+	fmt.Printf("%s \n\n", "--------------------------------------------------")
 
 	err = sqlDB.Ping()
 	if err != nil {
