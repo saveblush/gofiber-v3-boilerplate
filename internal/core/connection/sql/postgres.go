@@ -5,8 +5,6 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-
-	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils"
 )
 
 // openPostgres open initialize a new db connection.
@@ -17,7 +15,7 @@ func openPostgres(cf *Configuration) (*gorm.DB, error) {
 		cf.Host,
 		cf.Port,
 		cf.DatabaseName,
-		utils.TimeZone(),
+		cf.Timezone,
 	)
 
 	return gorm.Open(postgres.New(postgres.Config{

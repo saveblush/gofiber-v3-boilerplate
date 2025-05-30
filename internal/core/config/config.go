@@ -56,7 +56,7 @@ type DatabaseConfig struct {
 	DatabaseName string        `mapstructure:"DATABASE_NAME"`
 	DriverName   string        `mapstructure:"DRIVER_NAME"`
 	Charset      string        `mapstructure:"CHARSET"`
-	Timeout      string        `mapstructure:"TIMEOUT"`
+	Timezone     string        `mapstructure:"TIMEZONE"`
 	MaxIdleConns int           `mapstructure:"MAX_IDLE_CONNS"`
 	MaxOpenConns int           `mapstructure:"MAX_OPEN_CONNS"`
 	MaxLifetime  time.Duration `mapstructure:"MAX_LIFE_TIME"`

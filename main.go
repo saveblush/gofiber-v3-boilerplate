@@ -122,6 +122,7 @@ func initDatabase() error {
 		DatabaseName: config.CF.Database.RelaySQL.DatabaseName,
 		DriverName:   config.CF.Database.RelaySQL.DriverName,
 		Charset:      config.CF.Database.RelaySQL.Charset,
+		Timezone:     config.CF.Database.RelaySQL.Timezone,
 		MaxIdleConns: config.CF.Database.RelaySQL.MaxIdleConns,
 		MaxOpenConns: config.CF.Database.RelaySQL.MaxOpenConns,
 		MaxLifetime:  config.CF.Database.RelaySQL.MaxLifetime,

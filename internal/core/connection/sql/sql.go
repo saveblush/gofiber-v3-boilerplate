@@ -3,6 +3,7 @@ package sql
 import (
 	"time"
 
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -21,6 +22,7 @@ var (
 	defaultMaxIdleConns = 10
 	defaultMaxOpenConns = 30
 	defaultMaxLifetime  = time.Minute
+	defaultCharset      = "utf8mb4"
 )
 
 // gorm config
@@ -46,6 +48,7 @@ type Configuration struct {
 	DatabaseName string
 	DriverName   string
 	Charset      string
+	Timezone     string
 	MaxIdleConns int
 	MaxOpenConns int
 	MaxLifetime  time.Duration
@@ -56,6 +59,24 @@ func InitConnection(cf *Configuration) (*Session, error) {
 	var db *gorm.DB
 	var err error
 
+	// check params config
+	if cf.Charset == "" {
+		cf.Charset = defaultCharset
+	}
+	if cf.Timezone == "" {
+		cf.Timezone = utils.TimeZone()
+	}
+	if cf.MaxIdleConns == 0 {
+		cf.MaxIdleConns = defaultMaxIdleConns
+	}
+	if cf.MaxOpenConns == 0 {
+		cf.MaxOpenConns = defaultMaxOpenConns
+	}
+	if cf.MaxLifetime == 0 {
+		cf.MaxLifetime = defaultMaxLifetime
+	}
+
+	// open db
 	if cf.DriverName == PostgresDriver {
 		db, err = openPostgres(cf)
 	} else {
@@ -63,17 +84,6 @@ func InitConnection(cf *Configuration) (*Session, error) {
 	}
 	if err != nil {
 		return nil, err
-	}
-
-	// set config connection pool
-	if cf.MaxIdleConns > 0 {
-		cf.MaxIdleConns = defaultMaxIdleConns
-	}
-	if cf.MaxOpenConns > 0 {
-		cf.MaxOpenConns = defaultMaxOpenConns
-	}
-	if cf.MaxLifetime > 0 {
-		cf.MaxLifetime = defaultMaxLifetime
 	}
 
 	// connection pool
