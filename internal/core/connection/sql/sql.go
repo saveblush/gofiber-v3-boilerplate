@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils"
 )
 
 var (
