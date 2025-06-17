@@ -13,6 +13,7 @@ import (
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/breaker"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/connection/cache"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/connection/minio"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/connection/sql"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils/logger"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/handlers/routes"
@@ -57,6 +58,12 @@ func main() {
 	err = initCache()
 	if err != nil {
 		logger.Log.Panicf("init cache error: %s", err)
+	}
+
+	// Init storage
+	err = initStorage()
+	if err != nil {
+		logger.Log.Panicf("init storage error: %s", err)
 	}
 
 	// Init Circuit Breaker
@@ -117,7 +124,7 @@ func initDatabase() error {
 	configuration := &sql.Configuration{
 		Host:         config.CF.Database.RelaySQL.Host,
 		Port:         config.CF.Database.RelaySQL.Port,
-		Username:     config.CF.Database.RelaySQL.Username,
+		User:         config.CF.Database.RelaySQL.User,
 		Password:     config.CF.Database.RelaySQL.Password,
 		DatabaseName: config.CF.Database.RelaySQL.DatabaseName,
 		DriverName:   config.CF.Database.RelaySQL.DriverName,
@@ -138,6 +145,7 @@ func initDatabase() error {
 			&models.User{},
 			&models.AuthLogLogin{},
 			&models.Book{},
+			&models.BookFiles{},
 		)
 	}
 
@@ -158,6 +166,26 @@ func initCache() error {
 		DB:       config.CF.Cache.Redis.DB,
 	}
 	err := cache.Init(configuration)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// initStorage init storage
+func initStorage() error {
+	if config.CF.Storage.DriverName != config.MinioDriver {
+		return nil
+	}
+
+	configuration := &minio.Configuration{
+		Host:     config.CF.Storage.Host,
+		UserName: config.CF.Storage.User,
+		Password: config.CF.Storage.Password,
+		Secure:   config.CF.Storage.Secure,
+	}
+	err := minio.Init(configuration)
 	if err != nil {
 		return err
 	}

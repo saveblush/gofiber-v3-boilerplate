@@ -25,7 +25,7 @@ type service struct {
 	config     *config.Configs
 	result     *config.ReturnResult
 	repository Repository
-	cache      cache.Service
+	cache      cache.Client
 	token      token.Service
 	user       user.Service
 }

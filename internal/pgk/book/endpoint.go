@@ -110,7 +110,11 @@ func (ep *endpoint) Create(c fiber.Ctx) error {
 // @Produce json
 // @Param Accept-Language header string false "(en, th)" default(th)
 // @Param id path uint true "ID"
-// @Param Request body RequestUpdate true "Body for update"
+// @Param Request formData RequestUpdate true "Body for update"
+// @Param display_attachment formData file false "Display attachment"
+// @Param attachments[1] formData file false "Additional attachments"
+// @Param attachments[2] formData file false "Additional attachments"
+// @Param example_attachments formData []file false "Example attachment ตัวอย่าง multi"
 // @Success 200 {object} models.Book
 // @Failure 400 {object} models.Message
 // @Failure 401 {object} models.Message

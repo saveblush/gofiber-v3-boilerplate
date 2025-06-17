@@ -8,8 +8,8 @@ APP:
   ENVIRONMENT: "prod" #develop, prod
   ISSUER: "gofiber-v3-boilerplate"
   SOURCES:
-    - username: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-      password: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    - USER: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      PASSWORD: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 HTTP_SERVER:
   PREFORK: false
@@ -17,6 +17,15 @@ HTTP_SERVER:
     MAX: 221
     EXPIRATION: 1s
     ENABLE: true
+
+WEB:
+  DATE_FORMAT: "02/01/2006"
+  DATETIME_FORMAT: "02/01/2006 15:04:05"
+  TIME_FORMAT: "15:04:05"
+
+IMAGE:
+  THUMBNAIL_WIDTH: 300
+  THUMBNAIL_HEIGHT: 0
 
 SWAGGER:
   TITLE: "Go Fiber v3 Boilerplate API Docs"
@@ -36,7 +45,7 @@ DATABASE:
   RELAY_SQL:
     HOST: "localhost"
     PORT: 5432
-    USERNAME: "user"
+    USER: "user"
     PASSWORD: "password"
     DATABASE_NAME: "postgres"
     DRIVER_NAME: "postgres"
@@ -54,6 +63,15 @@ CACHE:
     PORT: 6379
     PASSWORD: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     DB: 0
+
+STORAGE:
+  HOST: "s3.example.com"  # or localhost:9000
+  USER: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  PASSWORD: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  SECURE: true
+  BUCKETNAME: "fiberv3boilerplate"
+  DRIVER_NAME: "minio"  # minio, ftp
+  URL: "https://s3.example.com/fiberv3boilerplate"
 
 HTML_TEMPLATE:
   SYSTEM_MAINTENANCE: "system_maintenance.html"

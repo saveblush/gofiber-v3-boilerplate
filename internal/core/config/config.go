@@ -16,6 +16,12 @@ import (
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils/logger"
 )
 
+const (
+	MinioDriver    = "minio"
+	MysqlDriver    = "mysql"
+	PostgresDriver = "postgres"
+)
+
 var (
 	CF = &Configs{}
 )
@@ -51,7 +57,7 @@ type AvailableConfig struct {
 type DatabaseConfig struct {
 	Host         string        `mapstructure:"HOST"`
 	Port         int           `mapstructure:"PORT"`
-	Username     string        `mapstructure:"USERNAME"`
+	User         string        `mapstructure:"USER"`
 	Password     string        `mapstructure:"PASSWORD"`
 	DatabaseName string        `mapstructure:"DATABASE_NAME"`
 	DriverName   string        `mapstructure:"DRIVER_NAME"`
@@ -63,7 +69,7 @@ type DatabaseConfig struct {
 }
 
 type UserPassConfig struct {
-	Username string `mapstructure:"USERNAME"`
+	User     string `mapstructure:"USER"`
 	Password string `mapstructure:"PASSWORD"`
 }
 
@@ -100,6 +106,11 @@ type Configs struct {
 		TimeFormat     string `mapstructure:"TIME_FORMAT"`
 	} `mapstructure:"WEB"`
 
+	Image struct {
+		ThumbnailWidth  uint `mapstructure:"THUMBNAIL_WIDTH"`
+		ThumbnailHeight uint `mapstructure:"THUMBNAIL_HEIGHT"`
+	} `mapstructure:"IMAGE"`
+
 	Swagger struct {
 		Title       string `mapstructure:"TITLE"`
 		Version     string `mapstructure:"VERSION"`
@@ -131,6 +142,16 @@ type Configs struct {
 			DB       int    `mapstructure:"DB"`
 		} `mapstructure:"REDIS"`
 	} `mapstructure:"CACHE"`
+
+	Storage struct {
+		Host       string `mapstructure:"HOST"`
+		User       string `mapstructure:"USER"`
+		Password   string `mapstructure:"PASSWORD"`
+		Secure     bool   `mapstructure:"SECURE"`
+		BucketName string `mapstructure:"BUCKETNAME"`
+		DriverName string `mapstructure:"DRIVER_NAME"`
+		URL        string `mapstructure:"URL"`
+	} `mapstructure:"STORAGE"`
 
 	HTMLTemplate struct {
 		SystemMaintenance string `mapstructure:"SYSTEM_MAINTENANCE"`

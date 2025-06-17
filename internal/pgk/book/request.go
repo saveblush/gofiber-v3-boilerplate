@@ -31,3 +31,7 @@ type RequestUpdate struct {
 	Description string `json:"description"`
 	Author      string `json:"author"`
 }
+
+type RequestAttach struct {
+	RequestID
+}

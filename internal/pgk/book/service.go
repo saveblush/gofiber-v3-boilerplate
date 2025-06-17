@@ -1,10 +1,11 @@
 package book
 
 import (
-	"errors"
 	"fmt"
-
-	"gorm.io/gorm"
+	"io"
+	"mime"
+	"net/url"
+	"path/filepath"
 
 	"github.com/jinzhu/copier"
 
@@ -12,11 +13,15 @@ import (
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/connection/cache"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/generic"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils/logger"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/models"
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/upload"
 )
 
 var (
-	keyCache = "user"
+	keyCache        = "user"
+	pathFileDisplay = "/book"
 )
 
 // service interface
@@ -34,7 +39,8 @@ type Service interface {
 type service struct {
 	config     *config.Configs
 	repository Repository
-	cache      cache.Service
+	cache      cache.Client
+	upload     upload.Service
 }
 
 func NewService() Service {
@@ -42,18 +48,27 @@ func NewService() Service {
 		config:     config.CF,
 		repository: NewRepository(),
 		cache:      cache.New(),
+		upload:     upload.NewService(),
 	}
 }
 
 // Find find
 func (s *service) Find(c *cctx.Context, req *Request) (interface{}, error) {
 	res, err := s.repository.Find(c.GetDatabase(), req)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return map[string]interface{}{}, nil
-	}
-
 	if err != nil {
 		return nil, err
+	}
+
+	// url display
+	url, err := url.Parse(s.config.Storage.URL)
+	if err != nil {
+		return nil, err
+	}
+	if res.Display.FileName != "" {
+		res.Display.Url = url.JoinPath(res.Display.FilePath, res.Display.FileName).String()
+	}
+	if res.Display.ThumbnailName != "" {
+		res.Display.ThumbnailUrl = url.JoinPath(res.Display.ThumbnailPath, res.Display.ThumbnailName).String()
 	}
 
 	return res, nil
@@ -87,17 +102,15 @@ func (s *service) FindByID(c *cctx.Context, req *RequestID) (interface{}, error)
 
 	// ถ้าไม่เจอ cache
 	if err != nil {
-		err := s.repository.FindByID(c.GetDatabase(), req.ID, res)
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return map[string]interface{}{}, nil
-		}
+		fetch, err := s.Find(c, &Request{ID: req.ID})
 		if err != nil {
 			return nil, err
 		}
+		copier.Copy(res, fetch)
 
 		// เก็บใน cache
 		if !generic.IsEmpty(req) {
-			_ = s.cache.Set(key, res, s.config.Cache.ExprieTime.Default)
+			//_ = s.cache.Set(key, res, s.config.Cache.ExprieTime.Default)
 		}
 	}
 
@@ -128,7 +141,99 @@ func (s *service) Update(c *cctx.Context, req *RequestUpdate) (interface{}, erro
 		return nil, err
 	}
 
+	// แนบรูปโปรไฟล์
+	_ = s.AttachDisplay(c, &RequestAttach{req.RequestID})
+
 	return data, nil
+}
+
+// AttachDisplay attach display
+func (s *service) AttachDisplay(c *cctx.Context, req *RequestAttach) error {
+	files, err := c.FormFile("display_attachment")
+	if err != nil {
+		return err
+	}
+
+	mainPath := pathFileDisplay
+	fileOrigName := files.Filename
+	newFileName := utils.GenFileName(fileOrigName)
+	ext := filepath.Ext(fileOrigName)
+	mimeType := mime.TypeByExtension(ext)
+
+	// get width, height for file image
+	var origWidth uint
+	var origHeight uint
+	rst := utils.GetResolutionImageByFileHeader(files)
+	if rst != nil {
+		origWidth = rst.Width
+		origHeight = rst.Height
+	}
+
+	file, err := files.Open()
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	path := mainPath
+	//err = s.upload.Upload(s.config.Storage.BucketName, path, newFileName, file, files.Size)	// ตัวอย่าง กรณีมีค่า file size
+	err = s.upload.Upload(s.config.Storage.BucketName, path, newFileName, file, 0) // ตัวอย่าง กรณีไม่มีค่า file size
+	if err != nil {
+		logger.Log.Errorf("upload error: %s", err)
+		return err
+	}
+
+	// รีเซ็ตตำแหน่งของไฟล์กลับไปที่เริ่มต้น เพื่อเอาไปใช้กับ thumbnail ต่อ
+	_, _ = file.Seek(0, io.SeekStart)
+
+	// thumbnail
+	var thumbnailName string
+	var thumbnailPath string
+	var thumbnailWidth uint
+	var thumbnailHeight uint
+	tmb, err := utils.CreateThumbnailImage(file, fileOrigName, s.config.Image.ThumbnailWidth, s.config.Image.ThumbnailHeight)
+	if err == nil {
+		defer tmb.File.Close()
+
+		path := filepath.Join(mainPath, "/thumbnail")
+		err := s.upload.Upload(s.config.Storage.BucketName, path, newFileName, tmb.File, tmb.Size)
+		if err == nil {
+			thumbnailName = newFileName
+			thumbnailPath = path
+			thumbnailWidth = tmb.Width
+			thumbnailHeight = tmb.Height
+		}
+	}
+
+	// db
+	// clear
+	err = s.repository.DeleteFile(c.GetDatabase(), &RequestAttach{req.RequestID})
+	if err != nil {
+		return err
+	}
+
+	// insert
+	data := &models.BookFiles{
+		BookID:          req.ID,
+		AttachType:      "1", // type display
+		FileOrigName:    fileOrigName,
+		FileName:        newFileName,
+		FilePath:        mainPath,
+		FileMimeType:    mimeType,
+		FileWidth:       origWidth,
+		FileHeight:      origHeight,
+		FileSize:        files.Size,
+		ThumbnailName:   thumbnailName,
+		ThumbnailPath:   thumbnailPath,
+		ThumbnailWidth:  thumbnailWidth,
+		ThumbnailHeight: thumbnailHeight,
+	}
+	err = s.repository.Create(c.GetDatabase(), data)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Delete delete

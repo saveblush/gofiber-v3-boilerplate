@@ -4,6 +4,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/jinzhu/copier"
+
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/generic"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/models"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/repositories"
@@ -14,10 +15,10 @@ type Repository interface {
 	Find(db *gorm.DB, req *Request) (*models.Book, error)
 	FindAll(db *gorm.DB, req *Request) ([]*models.Book, error)
 	FindAllPage(db *gorm.DB, req *RequestPage) (*models.Page, error)
-	FindByID(db *gorm.DB, id uint, i interface{}) error
 	Create(db *gorm.DB, i interface{}) error
 	Update(db *gorm.DB, m, i interface{}) error
 	Delete(db *gorm.DB, i interface{}) error
+	DeleteFile(db *gorm.DB, req *RequestAttach) error
 }
 
 type repository struct {
@@ -50,7 +51,9 @@ func (r *repository) query(db *gorm.DB, req *Request) *gorm.DB {
 func (r *repository) Find(db *gorm.DB, req *Request) (*models.Book, error) {
 	entities := &models.Book{}
 	query := r.query(db, req)
-	err := query.First(entities).Error
+	err := query.Limit(1).Order("id").
+		Preload("Display", "attach_type = ?", "1").
+		Find(entities).Error
 	if err != nil {
 		return nil, err
 	}
@@ -83,4 +86,13 @@ func (r *repository) FindAllPage(db *gorm.DB, req *RequestPage) (*models.Page, e
 	}
 
 	return models.NewPage(page, entities), nil
+}
+
+func (r *repository) DeleteFile(db *gorm.DB, req *RequestAttach) error {
+	err := r.SoftDelete(db, "book_id", req.ID, "", models.BookFiles{})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
