@@ -20,7 +20,7 @@ import (
 func AuthorizationRequired() fiber.Handler {
 	users := make(map[string]string)
 	for _, item := range config.CF.App.Sources {
-		users[item.Username] = item.Password
+		users[item.User] = item.Password
 	}
 
 	basicAuth := basicauth.New(basicauth.Config{
@@ -54,7 +54,7 @@ func AuthorizationAdminRequired() fiber.Handler {
 	return func(c fiber.Ctx) error {
 		users := make(map[string]string)
 		for _, item := range config.CF.App.Sources {
-			users[item.Username] = item.Password
+			users[item.User] = item.Password
 		}
 
 		basicAuth := basicauth.New(basicauth.Config{
@@ -97,7 +97,7 @@ func AuthorizationAPIKey() fiber.Handler {
 func ValidateAPIKey(c fiber.Ctx, key string) (bool, error) {
 	keys := make(map[string]string)
 	for _, item := range config.CF.App.Sources {
-		if strings.HasPrefix(item.Username, "api_key_") {
+		if strings.HasPrefix(item.User, "api_key_") {
 			keys[item.Password] = item.Password
 		}
 	}

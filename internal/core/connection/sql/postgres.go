@@ -10,7 +10,7 @@ import (
 // openPostgres open initialize a new db connection.
 func openPostgres(cf *Configuration) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s TimeZone=%s sslmode=disable",
-		cf.Username,
+		cf.User,
 		cf.Password,
 		cf.Host,
 		cf.Port,

@@ -7,12 +7,8 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
+	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils"
-)
-
-var (
-	MysqlDriver    = "mysql"
-	PostgresDriver = "postgres"
 )
 
 var (
@@ -45,7 +41,7 @@ type Session struct {
 type Configuration struct {
 	Host         string
 	Port         int
-	Username     string
+	User         string
 	Password     string
 	DatabaseName string
 	DriverName   string
@@ -79,7 +75,7 @@ func InitConnection(cf *Configuration) (*Session, error) {
 	}
 
 	// open db
-	if cf.DriverName == PostgresDriver {
+	if cf.DriverName == config.PostgresDriver {
 		db, err = openPostgres(cf)
 	} else {
 		db, err = openMysql(cf)

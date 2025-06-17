@@ -10,7 +10,7 @@ import (
 // openMysql open initialize a new db connection.
 func openMysql(cf *Configuration) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
-		cf.Username,
+		cf.User,
 		cf.Password,
 		cf.Host,
 		cf.Port,
