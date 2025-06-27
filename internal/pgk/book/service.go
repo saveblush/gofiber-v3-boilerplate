@@ -20,7 +20,7 @@ import (
 )
 
 var (
-	keyCache        = "user"
+	keyCache        = "book"
 	pathFileDisplay = "/book"
 )
 
@@ -108,10 +108,11 @@ func (s *service) FindByID(c *cctx.Context, req *RequestID) (interface{}, error)
 		if err != nil {
 			return nil, err
 		}
-		copier.Copy(res, fetch)
 
-		// เก็บใน cache
-		if !generic.IsEmpty(req) {
+		if !generic.IsEmpty(fetch) {
+			copier.Copy(res, fetch)
+
+			// เก็บใน cache
 			_ = s.cache.Set(key, res, s.config.Cache.ExprieTime.Default)
 		}
 	}
@@ -145,6 +146,10 @@ func (s *service) Update(c *cctx.Context, req *RequestUpdate) (interface{}, erro
 
 	// แนบรูปโปรไฟล์
 	_ = s.AttachDisplay(c, &RequestAttach{req.RequestID})
+
+	// เคลีย cache
+	key := fmt.Sprintf("%s-%d", keyCache, req.ID)
+	_ = s.cache.Delete(key)
 
 	return data, nil
 }
@@ -208,7 +213,7 @@ func (s *service) AttachDisplay(c *cctx.Context, req *RequestAttach) error {
 	}
 
 	// db
-	// clear
+	// เคลียรูปเดิมออก
 	err = s.repository.DeleteFile(c.GetDatabase(), &RequestAttach{req.RequestID})
 	if err != nil {
 		return err
@@ -247,6 +252,10 @@ func (s *service) Delete(c *cctx.Context, req *RequestID) error {
 	if err != nil {
 		return err
 	}
+
+	// เคลีย cache
+	key := fmt.Sprintf("%s-%d", keyCache, req.ID)
+	_ = s.cache.Delete(key)
 
 	return nil
 }
