@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 	"mime"
-	"path/filepath"
+	"path"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -79,7 +79,7 @@ func (c *client) Upload(bucketName, prefix, objectName string, object io.Reader,
 	}
 
 	if prefix != "" {
-		objectName = filepath.Join(prefix, objectName)
+		objectName = path.Join(prefix, objectName)
 	}
 
 	if objectSize == 0 {
@@ -98,7 +98,7 @@ func (c *client) Upload(bucketName, prefix, objectName string, object io.Reader,
 		}
 	}
 
-	mimeType := mime.TypeByExtension(filepath.Ext(objectName))
+	mimeType := mime.TypeByExtension(path.Ext(objectName))
 	info, err := c.client.PutObject(ctx, bucketName, objectName, object, objectSize, minio.PutObjectOptions{ContentType: mimeType})
 	if err != nil {
 		logger.Log.Errorf("put object error: %s", err)

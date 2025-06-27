@@ -5,7 +5,7 @@ import (
 	"io"
 	"mime"
 	"net/url"
-	"path/filepath"
+	"path"
 
 	"github.com/jinzhu/copier"
 
@@ -60,15 +60,17 @@ func (s *service) Find(c *cctx.Context, req *Request) (interface{}, error) {
 	}
 
 	// url display
-	url, err := url.Parse(s.config.Storage.URL)
-	if err != nil {
-		return nil, err
-	}
-	if res.Display.FileName != "" {
-		res.Display.Url = url.JoinPath(res.Display.FilePath, res.Display.FileName).String()
-	}
-	if res.Display.ThumbnailName != "" {
-		res.Display.ThumbnailUrl = url.JoinPath(res.Display.ThumbnailPath, res.Display.ThumbnailName).String()
+	if !generic.IsEmpty(res.Display) {
+		url, err := url.Parse(s.config.Storage.URL)
+		if err != nil {
+			return nil, err
+		}
+		if res.Display.FileName != "" {
+			res.Display.Url = url.JoinPath(res.Display.FilePath, res.Display.FileName).String()
+		}
+		if res.Display.ThumbnailName != "" {
+			res.Display.ThumbnailUrl = url.JoinPath(res.Display.ThumbnailPath, res.Display.ThumbnailName).String()
+		}
 	}
 
 	return res, nil
@@ -110,7 +112,7 @@ func (s *service) FindByID(c *cctx.Context, req *RequestID) (interface{}, error)
 
 		// เก็บใน cache
 		if !generic.IsEmpty(req) {
-			//_ = s.cache.Set(key, res, s.config.Cache.ExprieTime.Default)
+			_ = s.cache.Set(key, res, s.config.Cache.ExprieTime.Default)
 		}
 	}
 
@@ -157,7 +159,7 @@ func (s *service) AttachDisplay(c *cctx.Context, req *RequestAttach) error {
 	mainPath := pathFileDisplay
 	fileOrigName := files.Filename
 	newFileName := utils.GenFileName(fileOrigName)
-	ext := filepath.Ext(fileOrigName)
+	ext := path.Ext(fileOrigName)
 	mimeType := mime.TypeByExtension(ext)
 
 	// get width, height for file image
@@ -175,9 +177,9 @@ func (s *service) AttachDisplay(c *cctx.Context, req *RequestAttach) error {
 	}
 	defer file.Close()
 
-	path := mainPath
-	//err = s.upload.Upload(s.config.Storage.BucketName, path, newFileName, file, files.Size)	// ตัวอย่าง กรณีมีค่า file size
-	err = s.upload.Upload(s.config.Storage.BucketName, path, newFileName, file, 0) // ตัวอย่าง กรณีไม่มีค่า file size
+	newPath := mainPath
+	//err = s.upload.Upload(s.config.Storage.BucketName, newPath, newFileName, file, files.Size)	// ตัวอย่าง กรณีมีค่า file size
+	err = s.upload.Upload(s.config.Storage.BucketName, newPath, newFileName, file, 0) // ตัวอย่าง กรณีไม่มีค่า file size
 	if err != nil {
 		logger.Log.Errorf("upload error: %s", err)
 		return err
@@ -195,11 +197,11 @@ func (s *service) AttachDisplay(c *cctx.Context, req *RequestAttach) error {
 	if err == nil {
 		defer tmb.File.Close()
 
-		path := filepath.Join(mainPath, "/thumbnail")
-		err := s.upload.Upload(s.config.Storage.BucketName, path, newFileName, tmb.File, tmb.Size)
+		newPath := path.Join(mainPath, "/thumbnail")
+		err := s.upload.Upload(s.config.Storage.BucketName, newPath, newFileName, tmb.File, tmb.Size)
 		if err == nil {
 			thumbnailName = newFileName
-			thumbnailPath = path
+			thumbnailPath = newPath
 			thumbnailWidth = tmb.Width
 			thumbnailHeight = tmb.Height
 		}
