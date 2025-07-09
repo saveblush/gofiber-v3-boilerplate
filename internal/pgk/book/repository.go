@@ -3,8 +3,6 @@ package book
 import (
 	"gorm.io/gorm"
 
-	"github.com/jinzhu/copier"
-
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/generic"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/models"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/repositories"
@@ -14,7 +12,7 @@ import (
 type Repository interface {
 	Find(db *gorm.DB, req *Request) (*models.Book, error)
 	FindAll(db *gorm.DB, req *Request) ([]*models.Book, error)
-	FindAllPage(db *gorm.DB, req *RequestPage) (*models.Page, error)
+	FindAllPage(db *gorm.DB, req *Request) (*models.Page, error)
 	Create(db *gorm.DB, i interface{}) error
 	Update(db *gorm.DB, m, i interface{}) error
 	Delete(db *gorm.DB, i interface{}) error
@@ -74,12 +72,9 @@ func (r *repository) FindAll(db *gorm.DB, req *Request) ([]*models.Book, error) 
 }
 
 // FindAll find all page
-func (r *repository) FindAllPage(db *gorm.DB, req *RequestPage) (*models.Page, error) {
+func (r *repository) FindAllPage(db *gorm.DB, req *Request) (*models.Page, error) {
 	entities := []*models.Book{}
-	reqq := &Request{}
-	copier.Copy(reqq, &req)
-	query := r.query(db, reqq)
-
+	query := r.query(db, req)
 	page, err := r.FindAllAndPageInformation(query, &req.PageForm, &entities)
 	if err != nil {
 		return nil, err

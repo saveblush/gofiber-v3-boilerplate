@@ -10,7 +10,6 @@ import (
 // endpoint interface
 type Endpoint interface {
 	Find(c fiber.Ctx) error
-	FindAllPage(c fiber.Ctx) error
 	FindByID(c fiber.Ctx) error
 	Create(c fiber.Ctx) error
 	Update(c fiber.Ctx) error
@@ -44,27 +43,9 @@ func NewEndpoint() Endpoint {
 // @Failure 404 {object} models.Message
 // @Failure 410 {object} models.Message
 // @Security ApiKeyAuth
-// @Router /book [get]
+// @Router /books [get]
 func (ep *endpoint) Find(c fiber.Ctx) error {
 	return handlers.ResponseObject(c, ep.service.FindAll, &Request{})
-}
-
-// @Tags Book
-// @Summary Get book with page
-// @Description Get book with page
-// @Accept json
-// @Produce json
-// @Param Accept-Language header string false "(en, th)" default(th)
-// @Param Request query RequestPage true "query for get all"
-// @Success 200 {object} models.Page
-// @Failure 400 {object} models.Message
-// @Failure 401 {object} models.Message
-// @Failure 404 {object} models.Message
-// @Failure 410 {object} models.Message
-// @Security ApiKeyAuth
-// @Router /book/list [get]
-func (ep *endpoint) FindAllPage(c fiber.Ctx) error {
-	return handlers.ResponseObject(c, ep.service.FindAllPage, &RequestPage{})
 }
 
 // @Tags Book
@@ -80,7 +61,7 @@ func (ep *endpoint) FindAllPage(c fiber.Ctx) error {
 // @Failure 404 {object} models.Message
 // @Failure 410 {object} models.Message
 // @Security ApiKeyAuth
-// @Router /book/{id} [get]
+// @Router /books/{id} [get]
 func (ep *endpoint) FindByID(c fiber.Ctx) error {
 	return handlers.ResponseObject(c, ep.service.FindByID, &RequestID{})
 }
@@ -98,7 +79,7 @@ func (ep *endpoint) FindByID(c fiber.Ctx) error {
 // @Failure 404 {object} models.Message
 // @Failure 410 {object} models.Message
 // @Security ApiKeyAuth
-// @Router /book [post]
+// @Router /books [post]
 func (ep *endpoint) Create(c fiber.Ctx) error {
 	return handlers.ResponseObject(c, ep.service.Create, &RequestCreate{})
 }
@@ -121,7 +102,7 @@ func (ep *endpoint) Create(c fiber.Ctx) error {
 // @Failure 404 {object} models.Message
 // @Failure 410 {object} models.Message
 // @Security ApiKeyAuth
-// @Router /book/{id} [put]
+// @Router /books/{id} [put]
 func (ep *endpoint) Update(c fiber.Ctx) error {
 	return handlers.ResponseObject(c, ep.service.Update, &RequestUpdate{})
 }
@@ -139,7 +120,7 @@ func (ep *endpoint) Update(c fiber.Ctx) error {
 // @Failure 404 {object} models.Message
 // @Failure 410 {object} models.Message
 // @Security ApiKeyAuth
-// @Router /book/{id} [delete]
+// @Router /books/{id} [delete]
 func (ep *endpoint) Delete(c fiber.Ctx) error {
 	return handlers.ResponseSuccess(c, ep.service.Delete, &RequestID{})
 }

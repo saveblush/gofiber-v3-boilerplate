@@ -28,7 +28,6 @@ var (
 type Service interface {
 	Find(c *cctx.Context, req *Request) (interface{}, error)
 	FindAll(c *cctx.Context, req *Request) (interface{}, error)
-	FindAllPage(c *cctx.Context, req *RequestPage) (interface{}, error)
 	FindByID(c *cctx.Context, req *RequestID) (interface{}, error)
 	Create(c *cctx.Context, req *RequestCreate) (interface{}, error)
 	Update(c *cctx.Context, req *RequestUpdate) (interface{}, error)
@@ -78,22 +77,21 @@ func (s *service) Find(c *cctx.Context, req *Request) (interface{}, error) {
 
 // FindAll find all
 func (s *service) FindAll(c *cctx.Context, req *Request) (interface{}, error) {
-	res, err := s.repository.FindAll(c.GetDatabase(), req)
-	if err != nil {
-		return nil, err
+	if !generic.IsEmpty(req.PageForm) {
+		// แบ่งหน้า
+		res, err := s.repository.FindAllPage(c.GetDatabase(), req)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
+	} else {
+		// ไม่แบ่งหน้า
+		res, err := s.repository.FindAll(c.GetDatabase(), req)
+		if err != nil {
+			return nil, err
+		}
+		return res, nil
 	}
-
-	return res, nil
-}
-
-// FindAll find all page
-func (s *service) FindAllPage(c *cctx.Context, req *RequestPage) (interface{}, error) {
-	res, err := s.repository.FindAllPage(c.GetDatabase(), req)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
 }
 
 // FindByID find by id

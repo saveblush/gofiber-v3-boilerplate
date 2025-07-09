@@ -10,12 +10,6 @@ type Request struct {
 	ID   uint   `json:"id" query:"id"`
 	IDs  []uint `json:"ids" query:"ids"`
 	Name string `json:"name" query:"name"`
-}
-
-type RequestPage struct {
-	ID   uint   `json:"id" query:"id"`
-	IDs  []uint `json:"ids" query:"ids"`
-	Name string `json:"name" query:"name"`
 	models.PageForm
 }
 
