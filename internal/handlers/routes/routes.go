@@ -52,7 +52,6 @@ func (s *server) InitRouter() {
 	bookEndpoint := book.NewEndpoint()
 	bookApi := v1.Group("books", middlewares.AuthorizationRequired())
 	bookApi.Get("", bookEndpoint.Find)
-	//bookApi.Get("/list", bookEndpoint.FindAllPage)
 	bookApi.Get("/:id", bookEndpoint.FindByID)
 	bookApi.Post("/", bookEndpoint.Create)
 	bookApi.Put("/:id", bookEndpoint.Update)

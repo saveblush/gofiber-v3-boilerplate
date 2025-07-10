@@ -7,9 +7,10 @@ type RequestID struct {
 }
 
 type Request struct {
-	ID   uint   `json:"id" query:"id"`
-	IDs  []uint `json:"ids" query:"ids"`
-	Name string `json:"name" query:"name"`
+	ID         uint   `json:"id" query:"id"`
+	IDs        []uint `json:"ids" query:"ids"`
+	Name       string `json:"name" query:"name"`
+	Pagination bool   `json:"pagination" query:"pagination"`
 	models.PageForm
 }
 

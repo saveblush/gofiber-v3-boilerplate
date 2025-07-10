@@ -77,21 +77,22 @@ func (s *service) Find(c *cctx.Context, req *Request) (interface{}, error) {
 
 // FindAll find all
 func (s *service) FindAll(c *cctx.Context, req *Request) (interface{}, error) {
-	if !generic.IsEmpty(req.PageForm) {
-		// แบ่งหน้า
+	// แบ่งหน้า
+	if req.Pagination {
 		res, err := s.repository.FindAllPage(c.GetDatabase(), req)
 		if err != nil {
 			return nil, err
 		}
-		return res, nil
-	} else {
-		// ไม่แบ่งหน้า
-		res, err := s.repository.FindAll(c.GetDatabase(), req)
-		if err != nil {
-			return nil, err
-		}
+
 		return res, nil
 	}
+
+	res, err := s.repository.FindAll(c.GetDatabase(), req)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
 
 // FindByID find by id
