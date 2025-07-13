@@ -24,7 +24,7 @@ func NewService() Service {
 
 // Action action
 func (s *service) Action(c *cctx.Context, req *Request) (interface{}, error) {
-	status := ""
+	var status string
 	if req.Status == "on" {
 		status = config.AvailableStatusOnline
 	} else if req.Status == "off" {

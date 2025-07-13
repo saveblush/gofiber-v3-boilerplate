@@ -64,6 +64,7 @@ func (s *service) checkSessionLogin(c *cctx.Context, userID, sessionID, tokenChe
 		logger.Log.Errorf("find session login error: %s", err)
 		return s.result.Internal.Unauthorized
 	}
+
 	if generic.IsEmpty(session) {
 		logger.Log.Errorf("session login not found")
 		return s.result.Internal.Unauthorized

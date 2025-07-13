@@ -71,22 +71,23 @@ func (s *service) getLogin(c *cctx.Context, req *RequestLogLogin) (*models.UserL
 		return nil, err
 	}
 
-	// ดึงข้อมูลใหม่ user หลังจากที่อัพเดท last login
-	fetchUser, err := s.user.Find(c, &user.Request{UserID: req.UserID, UserStatus: []int{1}})
+	// ดึงข้อมูล user หลังจากที่อัพเดท last login
+	user, err := s.user.Find(c, &user.Request{UserID: req.UserID, UserStatus: []int{1}})
 	if err != nil {
 		logger.Log.Errorf("find user error: %s", err)
 		return nil, err
 	}
-	if generic.IsEmpty(fetchUser) {
+
+	if generic.IsEmpty(user) {
 		logger.Log.Errorf("user not found")
 		return nil, c.ErrorUnauthorized(s.result.UserNotFound.WithLocale(c.Ctx).Error())
 	}
 
 	// create token
 	dataToken := &token.Request{
-		UserID:    fetchUser.UserID,
-		UserLevel: fetchUser.UserLevel,
-		EmpID:     fetchUser.EmpID,
+		UserID:    user.UserID,
+		UserLevel: user.UserLevel,
+		EmpID:     user.EmpID,
 		SessionID: sessionID,
 	}
 	token, err := s.token.Create(c, dataToken)
@@ -99,14 +100,14 @@ func (s *service) getLogin(c *cctx.Context, req *RequestLogLogin) (*models.UserL
 	data := &models.Token{
 		AccessToken:  token.AccessToken,
 		RefreshToken: token.RefreshToken,
-		User:         fetchUser,
+		User:         user,
 	}
-	_ = s.createCacheSessionLogin(fetchUser.UserID, sessionID, data)
+	_ = s.createCacheSessionLogin(user.UserID, sessionID, data)
 
 	res := &models.UserLogin{
 		AccessToken:  token.AccessToken,
 		RefreshToken: token.RefreshToken,
-		User:         fetchUser,
+		User:         user,
 		SessionID:    sessionID,
 	}
 
@@ -117,15 +118,15 @@ func (s *service) getLogin(c *cctx.Context, req *RequestLogLogin) (*models.UserL
 func (s *service) Login(c *cctx.Context, req *RequestLogin) (interface{}, error) {
 	var pass bool
 
-	fetchUser, err := s.user.Find(c, &user.Request{UserID: req.UserID, UserStatus: []int{1}})
+	user, err := s.user.Find(c, &user.Request{UserID: req.UserID, UserStatus: []int{1}})
 	if err != nil {
 		logger.Log.Errorf("find user error: %s", err)
 		return nil, err
 	}
 
-	if !generic.IsEmpty(fetchUser) {
+	if !generic.IsEmpty(user) {
 		// check password
-		match := comparePassword(fetchUser.Password, req.Password)
+		match := comparePassword(user.Password, req.Password)
 		if match {
 			pass = true
 		}
@@ -152,8 +153,8 @@ func (s *service) Login(c *cctx.Context, req *RequestLogin) (interface{}, error)
 	// login สำเร็จ
 	data := &RequestLogLogin{
 		UserID:    req.UserID,
-		UserLevel: fetchUser.UserLevel,
-		EmpID:     fetchUser.EmpID,
+		UserLevel: user.UserLevel,
+		EmpID:     user.EmpID,
 	}
 	res, err := s.getLogin(c, data)
 	if err != nil {
@@ -202,20 +203,20 @@ func (s *service) Logout(c *cctx.Context) error {
 
 // LoginBypass login bypass
 func (s *service) LoginBypass(c *cctx.Context, req *RequestLoginBypass) (interface{}, error) {
-	fetchUser, err := s.user.Find(c, &user.Request{UserID: req.UserID, UserStatus: []int{1}})
+	user, err := s.user.Find(c, &user.Request{UserID: req.UserID, UserStatus: []int{1}})
 	if err != nil {
 		logger.Log.Errorf("find user error: %s", err)
 		return nil, err
 	}
-	if generic.IsEmpty(fetchUser) {
+	if generic.IsEmpty(user) {
 		logger.Log.Errorf("user not found")
 		return nil, c.ErrorUnauthorized(s.result.UserNotFound.WithLocale(c.Ctx).Error())
 	}
 
 	data := &RequestLogLogin{
 		UserID:    req.UserID,
-		UserLevel: fetchUser.UserLevel,
-		EmpID:     fetchUser.EmpID,
+		UserLevel: user.UserLevel,
+		EmpID:     user.EmpID,
 	}
 	res, err := s.getLogin(c, data)
 	if err != nil {
@@ -276,12 +277,13 @@ func (s *service) RefreshToken(c *cctx.Context, req *token.RequestRefresh) (*mod
 		return nil, s.result.Internal.Unauthorized
 	}
 
-	fetchUser, err := s.user.Find(c, &user.Request{UserID: refreshToken.UserID, UserStatus: []int{1}})
+	user, err := s.user.Find(c, &user.Request{UserID: refreshToken.UserID, UserStatus: []int{1}})
 	if err != nil {
 		logger.Log.Errorf("find user error: %s", err)
 		return nil, err
 	}
-	if generic.IsEmpty(fetchUser) {
+
+	if generic.IsEmpty(user) {
 		logger.Log.Errorf("user not found")
 		return nil, c.ErrorUnauthorized(s.result.UserNotFound.WithLocale(c.Ctx).Error())
 	}
@@ -289,7 +291,7 @@ func (s *service) RefreshToken(c *cctx.Context, req *token.RequestRefresh) (*mod
 	res := &models.Token{
 		AccessToken:  token.AccessToken,
 		RefreshToken: token.RefreshToken,
-		User:         fetchUser,
+		User:         user,
 	}
 
 	return res, nil

@@ -66,6 +66,7 @@ func (s *service) VerifyRefresh(c *cctx.Context, tokenString string) (*models.To
 	if err != nil {
 		return nil, err
 	}
+
 	if !token.Valid {
 		return nil, err
 	}
