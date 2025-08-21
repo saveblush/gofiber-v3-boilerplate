@@ -80,7 +80,7 @@ type Configs struct {
 
 	App struct {
 		AvailableStatus string           // สถานะปิด/เปิดระบบ [on/off]
-		ProjectId       string           `mapstructure:"PROJECT_ID"`
+		ProjectID       string           `mapstructure:"PROJECT_ID"`
 		ProjectName     string           `mapstructure:"PROJECT_NAME"`
 		Version         string           `mapstructure:"VERSION"`
 		WebBaseUrl      string           `mapstructure:"WEB_BASE_URL"`
@@ -138,6 +138,7 @@ type Configs struct {
 		Redis struct {
 			Host     string `mapstructure:"HOST"`
 			Port     int    `mapstructure:"PORT"`
+			User     string `mapstructure:"USER"`
 			Password string `mapstructure:"PASSWORD"`
 			DB       int    `mapstructure:"DB"`
 		} `mapstructure:"REDIS"`

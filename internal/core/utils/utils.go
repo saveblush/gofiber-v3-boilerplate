@@ -32,7 +32,7 @@ func UUID() string {
 // SetKey set key
 // set key สำหรับเก็บ cache
 func SetKey(sign, user string) string {
-	return fmt.Sprintf(patternKeyMode, config.CF.App.ProjectId, sign, user)
+	return fmt.Sprintf(patternKeyMode, config.CF.App.ProjectID, sign, user)
 }
 
 // SetKeySessionLogin set key session login

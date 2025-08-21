@@ -1,5 +1,5 @@
 # Define version
-ARG GO_VERSION=1.24.3
+ARG GO_VERSION=1.24.6
 FROM golang:${GO_VERSION}-bullseye AS base
 
 ARG TARGETPLATFORM
@@ -41,7 +41,7 @@ COPY go.mod go.sum ./
 RUN GOARCH=$(echo "$TARGETPLATFORM" | cut -d'/' -f2) go mod download && go mod verify
 
 ## Copy the source code into the container
-COPY . .
+COPY . ./
 
 ## Gen swagger
 RUN go install github.com/swaggo/swag/cmd/swag@latest
@@ -49,8 +49,8 @@ RUN swag init --md ./docs --parseGoList --parseDependency -g main.go
 
 ## Build app
 RUN GOARCH=$(echo "$TARGETPLATFORM" | cut -d'/' -f2) go build \
-    -ldflags="-w -s" \
-    -o main .
+   -ldflags="-w -s" \
+   -o main .
 
 
 # Production, final image to reduce size
@@ -65,7 +65,7 @@ COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/group /etc/group
 
 ## Copy app from the builder
-COPY --from=builder /build/main .
+COPY --from=builder /build/main ./
 COPY --from=builder --chown=gouser:gouser /build/docs ./docs
 COPY --from=builder --chown=gouser:gouser /build/configs ./configs
 COPY --from=builder --chown=gouser:gouser /build/templates ./templates

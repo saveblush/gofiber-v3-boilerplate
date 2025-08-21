@@ -19,7 +19,7 @@ var (
 type Configuration struct {
 	Host     string
 	Port     int
-	Username string
+	User     string
 	Password string
 	DB       int
 }
@@ -29,8 +29,8 @@ type client struct {
 }
 
 type Client interface {
-	Set(key string, value interface{}, expiredTime time.Duration) error
-	Get(key string, value interface{}) error
+	Set(key string, value any, expiredTime time.Duration) error
+	Get(key string, value any) error
 	GetKeys(pattern string) ([]string, error)
 	Delete(key string) error
 	Close() error
@@ -41,10 +41,14 @@ func Init(cf *Configuration) error {
 	addr := fmt.Sprintf("%s:%d", cf.Host, cf.Port)
 	connection = redis.NewClient(&redis.Options{
 		Addr:     addr,
-		Username: cf.Username,
+		Username: cf.User,
 		Password: cf.Password,
 		DB:       cf.DB,
 	})
+
+	fmt.Printf("%s \n", "--------------------------------------------------")
+	fmt.Printf("Redis Stats [host: %s:%d dbname: %d]\n", cf.Host, cf.Port, cf.DB)
+	fmt.Printf("%s \n\n", "--------------------------------------------------")
 
 	err := connection.Ping(context.TODO()).Err()
 	if err != nil {
@@ -61,7 +65,7 @@ func New() Client {
 	}
 }
 
-func (c *client) Set(key string, value interface{}, expiredTime time.Duration) error {
+func (c *client) Set(key string, value any, expiredTime time.Duration) error {
 	data, errMar := json.Marshal(&value)
 	if errMar != nil {
 		return errMar
@@ -75,7 +79,7 @@ func (c *client) Set(key string, value interface{}, expiredTime time.Duration) e
 	return nil
 }
 
-func (c *client) Get(key string, value interface{}) error {
+func (c *client) Get(key string, value any) error {
 	val, err := c.client.Get(ctx, key).Result()
 	if err != nil {
 		if err == redis.Nil {

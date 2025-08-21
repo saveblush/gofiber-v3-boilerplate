@@ -95,7 +95,7 @@ func InitConnection(cf *Configuration) (*Session, error) {
 	sqlDB.SetConnMaxLifetime(cf.MaxLifetime)
 
 	fmt.Printf("%s \n", "--------------------------------------------------")
-	fmt.Printf("DB Stats [host: %s dbname: %s]\n", cf.Host, cf.DatabaseName)
+	fmt.Printf("DB Stats [host: %s:%d dbname: %s]\n", cf.Host, cf.Port, cf.DatabaseName)
 	fmt.Printf("MaxOpenConnections: %v\n", sqlDB.Stats().MaxOpenConnections)
 	fmt.Printf("%s \n\n", "--------------------------------------------------")
 
