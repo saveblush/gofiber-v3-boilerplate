@@ -1,13 +1,15 @@
 package routes
 
 import (
-	swagger "github.com/saveblush/gofiber3-swagger"
+	"github.com/gofiber/contrib/v3/swaggo"
+	"github.com/gofiber/fiber/v3/middleware/healthcheck"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/handlers/middlewares"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/auth"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/book"
-	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/healthcheck"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/pgk/system"
+
+	_ "github.com/saveblush/gofiber-v3-boilerplate/docs"
 )
 
 // InitRouter init router
@@ -18,7 +20,7 @@ func (s *server) InitRouter() {
 	// system
 	systemEndpoint := system.NewEndpoint()
 	systemRoute := api.Group("/system")
-	systemRoute.Post("/action", systemEndpoint.Action, middlewares.AuthorizationAdminRequired())
+	systemRoute.Post("/action", middlewares.AuthorizationAdminRequired(), systemEndpoint.Action)
 	systemRoute.Get("/maintenance", middlewares.Maintenance())
 
 	api.Use(
@@ -27,22 +29,23 @@ func (s *server) InitRouter() {
 	)
 
 	// healthcheck endpoint
-	healthCheckEndpoint := healthcheck.NewEndpoint()
-	api.Get("/healthcheck", healthCheckEndpoint.HealthCheck)
+	api.Get("/healthcheck", healthcheck.New())
 
 	// api v1
 	v1 := api.Group("/v1")
 
 	// swagger
 	if s.config.Swagger.Enable {
-		v1.Get("/swagger/*", swagger.HandlerDefault)
+		v1.Get("/swagger/*", swaggo.New(swaggo.Config{
+			Title: s.config.Swagger.Title,
+		}))
 	}
 
 	// auth
 	authEndpoint := auth.NewEndpoint()
-	v1.Post("/login", authEndpoint.Login, middlewares.AuthorizationRequired())
-	v1.Post("/logout", authEndpoint.Logout, middlewares.AuthorizationRequired())
-	v1.Get("/me", authEndpoint.Me, middlewares.AuthorizationRequired())
+	v1.Post("/login", middlewares.AuthorizationRequired(), authEndpoint.Login)
+	v1.Post("/logout", middlewares.AuthorizationRequired(), authEndpoint.Logout)
+	v1.Get("/me", middlewares.AuthorizationRequired(), authEndpoint.Me)
 
 	authApi := v1.Group("auth")
 	authApi.Use(middlewares.AuthorizationRequired())

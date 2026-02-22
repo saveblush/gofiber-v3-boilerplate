@@ -3,24 +3,36 @@ package middlewares
 import (
 	"crypto/sha256"
 	"crypto/subtle"
+	"errors"
 	"strings"
 
+	jwtware "github.com/gofiber/contrib/v3/jwt"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/extractors"
 	"github.com/gofiber/fiber/v3/middleware/basicauth"
 	"github.com/gofiber/fiber/v3/middleware/keyauth"
 	"github.com/golang-jwt/jwt/v5"
-	jwtware "github.com/saveblush/gofiber3-contrib/jwt"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils/logger"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/models"
 )
 
+var (
+	prefixBasicKey = "basic_key_"
+	prefixAdminKey = "admin_key_"
+	prefixApiKey   = "api_key_"
+	prefixWsKey    = "ws_key_"
+)
+
 // AuthorizationRequired authorization jwt and basicauth
 func AuthorizationRequired() fiber.Handler {
 	users := make(map[string]string)
 	for _, item := range config.CF.App.Sources {
-		users[item.User] = item.Password
+		if strings.HasPrefix(item.User, prefixBasicKey) {
+			// ตัด text basic_key_
+			users[item.User[len(prefixBasicKey):]] = item.Password
+		}
 	}
 
 	basicAuth := basicauth.New(basicauth.Config{
@@ -34,7 +46,8 @@ func AuthorizationRequired() fiber.Handler {
 	return jwtware.New(jwtware.Config{
 		Claims:     &models.TokenClaims{},
 		SigningKey: jwtware.SigningKey{Key: []byte(config.CF.JWT.AccessSecretKey)},
-		KeyFunc: func(t *jwt.Token) (interface{}, error) {
+		Extractor:  extractors.FromAuthHeader("Bearer"),
+		KeyFunc: func(t *jwt.Token) (any, error) {
 			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fiber.ErrUnauthorized
 			}
@@ -54,7 +67,10 @@ func AuthorizationAdminRequired() fiber.Handler {
 	return func(c fiber.Ctx) error {
 		users := make(map[string]string)
 		for _, item := range config.CF.App.Sources {
-			users[item.User] = item.Password
+			if strings.HasPrefix(item.User, prefixAdminKey) {
+				// ตัด text admin_key_
+				users[item.User[len(prefixAdminKey):]] = item.Password
+			}
 		}
 
 		basicAuth := basicauth.New(basicauth.Config{
@@ -73,7 +89,7 @@ func AuthorizationAdminRequired() fiber.Handler {
 func AuthorizationAPIKey() fiber.Handler {
 	return func(c fiber.Ctx) error {
 		auth := keyauth.New(keyauth.Config{
-			KeyLookup: "header:x-api-key",
+			Extractor: extractors.FromHeader("X-API-Key"),
 			Validator: func(c fiber.Ctx, key string) (bool, error) {
 				return ValidateAPIKey(c, key)
 			},
@@ -93,11 +109,15 @@ func AuthorizationAPIKey() fiber.Handler {
 	}
 }
 
-// ValidateAPIKey verify api-key
-func ValidateAPIKey(c fiber.Ctx, key string) (bool, error) {
+// validateAPIKey verify auth key
+func validateAPIKey(_ fiber.Ctx, prefixKey, key string) (bool, error) {
+	if prefixKey == "" {
+		return false, errors.New("missing Prefix Key")
+	}
+
 	keys := make(map[string]string)
 	for _, item := range config.CF.App.Sources {
-		if strings.HasPrefix(item.User, "api_key_") {
+		if strings.HasPrefix(item.User, prefixKey) {
 			keys[item.Password] = item.Password
 		}
 	}
@@ -114,4 +134,14 @@ func ValidateAPIKey(c fiber.Ctx, key string) (bool, error) {
 	}
 
 	return false, keyauth.ErrMissingOrMalformedAPIKey
+}
+
+// ValidateAPIKey verify api-key
+func ValidateAPIKey(c fiber.Ctx, key string) (bool, error) {
+	return validateAPIKey(c, prefixApiKey, key)
+}
+
+// ValidateWebsocketKey verify websocket-key
+func ValidateWebsocketKey(c fiber.Ctx, key string) (bool, error) {
+	return validateAPIKey(c, prefixWsKey, key)
 }

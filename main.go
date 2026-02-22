@@ -9,7 +9,6 @@ import (
 
 	"github.com/gofiber/fiber/v3"
 
-	"github.com/saveblush/gofiber-v3-boilerplate/docs"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/breaker"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/connection/cache"
@@ -40,13 +39,6 @@ func main() {
 	if err != nil {
 		logger.Log.Panicf("init return result error: %s", err)
 	}
-
-	// Set swagger info
-	docs.SwaggerInfo.Title = config.CF.Swagger.Title
-	docs.SwaggerInfo.Description = config.CF.Swagger.Description
-	docs.SwaggerInfo.Version = config.CF.Swagger.Version
-	docs.SwaggerInfo.Host = fmt.Sprintf("%s%s", config.CF.Swagger.Host, config.CF.Swagger.BaseURL)
-	//docs.SwaggerInfo.Schemes = []string{"https", "http"}
 
 	// Init database
 	err = initDatabase()

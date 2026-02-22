@@ -3,12 +3,14 @@ APP:
   PROJECT_NAME: "gofiber-v3-boilerplate"
   VERSION: "0.1.0"
   WEB_BASE_URL: ""
-  API_BASE_URL: "/api" 
+  API_BASE_URL: "/api"
   PORT: 8456
   ENVIRONMENT: "prod" #develop, prod
   ISSUER: "gofiber-v3-boilerplate"
   SOURCES:
-    - USER: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    - USER: "basic_key_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      PASSWORD: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    - USER: "api_key_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
       PASSWORD: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 HTTP_SERVER:
@@ -65,12 +67,12 @@ CACHE:
     DB: 0
 
 STORAGE:
-  HOST: "s3.example.com"  # or localhost:9000
+  HOST: "s3.example.com" # or localhost:9000
   USER: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   PASSWORD: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   SECURE: true
   BUCKETNAME: "fiberv3boilerplate"
-  DRIVER_NAME: "minio"  # minio, ftp
+  DRIVER_NAME: "minio" # minio, ftp
   URL: "https://s3.example.com/fiberv3boilerplate"
 
 HTML_TEMPLATE:

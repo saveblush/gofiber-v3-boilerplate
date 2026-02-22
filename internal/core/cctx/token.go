@@ -3,7 +3,7 @@ package cctx
 import (
 	"errors"
 
-	"github.com/golang-jwt/jwt/v5"
+	jwtware "github.com/gofiber/contrib/v3/jwt"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/connection/cache"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/generic"
@@ -13,8 +13,8 @@ import (
 
 // getClaims get user claims and session login
 func (c *Context) getClaims() (*models.TokenClaims, *models.Token, error) {
-	token, ok := c.Locals(UserKey).(*jwt.Token)
-	if !ok {
+	token := jwtware.FromContext(c)
+	if generic.IsEmpty(token) {
 		return nil, nil, errors.New("token claims not found")
 	}
 
