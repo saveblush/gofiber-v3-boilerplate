@@ -1,5 +1,5 @@
 # Define version
-ARG GO_VERSION=1.24.6
+ARG GO_VERSION=1.25.1
 FROM golang:${GO_VERSION}-alpine AS base
 
 ARG TARGETPLATFORM
@@ -67,7 +67,7 @@ USER gouser
 
 ENV TZ=Asia/Bangkok
 
-EXPOSE 8000
+EXPOSE 8456
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["/app/main"]
