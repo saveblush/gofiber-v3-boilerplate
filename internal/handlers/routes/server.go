@@ -7,11 +7,14 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/compress"
 	"github.com/gofiber/fiber/v3/middleware/cors"
+	"github.com/gofiber/fiber/v3/middleware/etag"
+	"github.com/gofiber/fiber/v3/middleware/helmet"
 	"github.com/gofiber/fiber/v3/middleware/idempotency"
 	"github.com/gofiber/fiber/v3/middleware/limiter"
 	"github.com/gofiber/fiber/v3/middleware/pprof"
 	"github.com/gofiber/fiber/v3/middleware/recover"
 	"github.com/gofiber/fiber/v3/middleware/requestid"
+	"github.com/gofiber/fiber/v3/middleware/responsetime"
 	"github.com/robfig/cron/v3"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/cctx"
@@ -58,6 +61,7 @@ func NewServer() (*server, error) {
 		CaseSensitive:     true,
 		JSONEncoder:       json.Marshal,
 		JSONDecoder:       json.Unmarshal,
+		ErrorHandler:      middlewares.HandlerError,
 	})
 
 	// Middlewares
@@ -65,10 +69,15 @@ func NewServer() (*server, error) {
 		compress.New(compress.Config{
 			Level: compress.LevelBestCompression,
 		}),
+		etag.New(etag.Config{
+			Weak: true,
+		}),
 		cors.New(),
 		requestid.New(),
+		helmet.New(),
 		idempotency.New(),
 		pprof.New(),
+		responsetime.New(),
 		recover.New(),
 	)
 

@@ -294,5 +294,11 @@ func (s *service) RefreshToken(c *cctx.Context, req *token.RequestRefresh) (*mod
 		User:         user,
 	}
 
+	// เคลีย session login ก่อน แล้วค่อยเก็บใหม่
+	_ = s.clearCacheSessionLogin(refreshToken.UserID, refreshToken.SessionID)
+
+	// เก็บ cache session login
+	_ = s.createCacheSessionLogin(refreshToken.UserID, refreshToken.SessionID, res)
+
 	return res, nil
 }
