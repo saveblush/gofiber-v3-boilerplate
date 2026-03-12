@@ -23,8 +23,6 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	flag.Parse()
-
 	// Init logger
 	logger.InitLogger()
 
@@ -75,6 +73,8 @@ func main() {
 
 	// Listen app
 	addr := flag.String("addr", fmt.Sprintf(":%d", config.CF.App.Port), "http service address")
+	flag.Parse()
+
 	listenConfig := fiber.ListenConfig{
 		EnablePrefork: config.CF.HTTPServer.Prefork,
 	}

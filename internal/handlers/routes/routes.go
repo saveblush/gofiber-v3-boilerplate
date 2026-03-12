@@ -1,7 +1,10 @@
 package routes
 
 import (
+	"time"
+
 	"github.com/gofiber/contrib/v3/swaggo"
+	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/healthcheck"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/handlers/middlewares"
@@ -59,6 +62,13 @@ func (s *server) InitRouter() {
 	bookApi.Post("/", bookEndpoint.Create)
 	bookApi.Put("/:id", bookEndpoint.Update)
 	bookApi.Delete("/:id", bookEndpoint.Delete)
+
+	// test timeout
+	handler := func(c fiber.Ctx) error {
+		time.Sleep(13 * time.Second)
+		return c.SendString("finished")
+	}
+	v1.Get("test-timeout/:id", middlewares.Timeout(handler))
 
 	// not found
 	s.Use(middlewares.Notfound())

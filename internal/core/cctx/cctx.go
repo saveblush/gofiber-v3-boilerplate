@@ -12,7 +12,6 @@ import (
 
 const (
 	pathKey            = "path"
-	queryKey           = "query"
 	compositeFormDepth = 3
 	entities           = "Entities"
 	LangKey            = "lang"
@@ -31,7 +30,7 @@ func New(c fiber.Ctx) *Context {
 }
 
 // BindValue bind value
-func (c *Context) BindValue(i interface{}, validate bool) error {
+func (c *Context) BindValue(i any, validate bool) error {
 	switch c.Method() {
 	case fiber.MethodGet:
 		_ = c.Bind().Query(i)
@@ -56,7 +55,7 @@ func (c *Context) BindValue(i interface{}, validate bool) error {
 }
 
 // Validate validate
-func (c *Context) Validate(i interface{}) error {
+func (c *Context) Validate(i any) error {
 	err := config.CF.Validator.Struct(i)
 	if err != nil {
 		return config.RR.CustomMessage(err.Error(), err.Error()).WithLocale(c.Ctx)
@@ -66,7 +65,7 @@ func (c *Context) Validate(i interface{}) error {
 }
 
 // TrimSpace trim space
-func (c *Context) TrimSpace(i interface{}, depth int) {
+func (c *Context) TrimSpace(i any, depth int) {
 	e := reflect.ValueOf(i).Elem()
 	for i := 0; i < e.NumField(); i++ {
 		if depth <= compositeFormDepth && e.Type().Field(i).Type.Kind() == reflect.Struct {
@@ -84,9 +83,9 @@ func (c *Context) TrimSpace(i interface{}, depth int) {
 }
 
 // PathParser parse path param
-func (c *Context) PathParser(i interface{}, depth int) {
+func (c *Context) PathParser(i any, depth int) {
 	formValue := reflect.ValueOf(i)
-	if formValue.Kind() == reflect.Ptr {
+	if formValue.Kind() == reflect.Pointer {
 		formValue = formValue.Elem()
 	}
 

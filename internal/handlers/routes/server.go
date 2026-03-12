@@ -67,7 +67,7 @@ func NewServer() (*server, error) {
 	// Middlewares
 	app.Use(
 		compress.New(compress.Config{
-			Level: compress.LevelBestCompression,
+			Level: compress.LevelDefault,
 		}),
 		etag.New(etag.Config{
 			Weak: true,

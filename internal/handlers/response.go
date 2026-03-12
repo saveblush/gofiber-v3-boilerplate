@@ -12,7 +12,7 @@ import (
 )
 
 // ResponseObject handle response object
-func ResponseObject(c fiber.Ctx, fn interface{}, request interface{}) error {
+func ResponseObject(c fiber.Ctx, fn any, request any) error {
 	ctx := cctx.New(c)
 	err := ctx.BindValue(request, true)
 	if err != nil {
@@ -35,7 +35,7 @@ func ResponseObject(c fiber.Ctx, fn interface{}, request interface{}) error {
 }
 
 // ResponseObjectWithoutRequest handle response object without request
-func ResponseObjectWithoutRequest(c fiber.Ctx, fn interface{}) error {
+func ResponseObjectWithoutRequest(c fiber.Ctx, fn any) error {
 	ctx := cctx.New(c)
 	out := reflect.ValueOf(fn).Call([]reflect.Value{
 		reflect.ValueOf(ctx),
@@ -51,7 +51,7 @@ func ResponseObjectWithoutRequest(c fiber.Ctx, fn interface{}) error {
 }
 
 // ResponseSuccess handle response success
-func ResponseSuccess(c fiber.Ctx, fn interface{}, request interface{}) error {
+func ResponseSuccess(c fiber.Ctx, fn any, request any) error {
 	ctx := cctx.New(c)
 	err := ctx.BindValue(request, true)
 	if err != nil {
@@ -74,7 +74,7 @@ func ResponseSuccess(c fiber.Ctx, fn interface{}, request interface{}) error {
 }
 
 // ResponseSuccessWithoutRequest handle response success without request
-func ResponseSuccessWithoutRequest(c fiber.Ctx, fn interface{}) error {
+func ResponseSuccessWithoutRequest(c fiber.Ctx, fn any) error {
 	ctx := cctx.New(c)
 	out := reflect.ValueOf(fn).Call([]reflect.Value{
 		reflect.ValueOf(ctx),

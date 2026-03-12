@@ -7,7 +7,7 @@ import (
 )
 
 // JSON render json to client
-func JSON(c fiber.Ctx, response interface{}) error {
+func JSON(c fiber.Ctx, response any) error {
 	return c.
 		Status(fiber.StatusOK).
 		JSON(response)
