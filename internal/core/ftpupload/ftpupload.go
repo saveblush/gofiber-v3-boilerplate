@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"path/filepath"
+	"path"
 	"strings"
 	"time"
 
@@ -97,7 +97,7 @@ func Upload(bucketName, prefix, objectName string, object io.Reader, auth *Auth)
 	logger.Log.Debug("FTP login ok")
 
 	if prefix != "" {
-		bucketName = filepath.Join(bucketName, prefix)
+		bucketName = path.Join(bucketName, prefix)
 	}
 
 	// ไปยัง dir
@@ -113,7 +113,7 @@ func Upload(bucketName, prefix, objectName string, object io.Reader, auth *Auth)
 	logger.Log.Debug("FTP change dir ok")
 
 	// put
-	dst := filepath.Join(bucketName, objectName)
+	dst := path.Join(bucketName, objectName)
 	logger.Log.Debugf("FTP dst: %s", dst)
 
 	err = c.Stor(dst, object)
