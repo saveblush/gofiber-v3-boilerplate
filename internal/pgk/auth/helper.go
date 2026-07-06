@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/gofiber/fiber/v3"
@@ -25,9 +24,7 @@ func comparePassword(hash string, password string) bool {
 // ใช้กับเส้น me และ refreshtoken
 func (s *service) createCacheSessionLogin(userID, sessionID string, data *models.Token) error {
 	key := utils.SetKeySessionLogin(userID, sessionID)
-	fmt.Println(key)
-	// ใช้ timeout ของ RefreshToken
-	_ = s.cache.Set(key, data, s.config.JWT.RefreshExpireTime)
+	_ = s.cache.Set(key, data, s.config.JWT.RefreshExpireTime) // ใช้ timeout ของ RefreshToken
 
 	return nil
 }

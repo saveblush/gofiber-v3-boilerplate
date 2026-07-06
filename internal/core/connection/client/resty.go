@@ -37,11 +37,11 @@ type Client interface {
 	BasicAuthentication(token string) string
 	BearerAuthentication(token string) string
 	NewHeaders(h map[string]string) map[string]string
-	Get(url string, headers, queryParams map[string]string, i interface{}, breakerName string) (*resty.Response, error)
-	Post(url string, headers, pathParams map[string]string, body interface{}, i interface{}, breakerName string) (*resty.Response, error)
-	Put(url string, headers, pathParams map[string]string, body interface{}, i interface{}, breakerName string) (*resty.Response, error)
-	Patch(url string, headers, pathParams map[string]string, body interface{}, i interface{}, breakerName string) (*resty.Response, error)
-	Delete(url string, headers, pathParams map[string]string, body interface{}, i interface{}, breakerName string) (*resty.Response, error)
+	Get(url string, headers, queryParams map[string]string, i any, breakerName string) (*resty.Response, error)
+	Post(url string, headers, pathParams map[string]string, body any, i any, breakerName string) (*resty.Response, error)
+	Put(url string, headers, pathParams map[string]string, body any, i any, breakerName string) (*resty.Response, error)
+	Patch(url string, headers, pathParams map[string]string, body any, i any, breakerName string) (*resty.Response, error)
+	Delete(url string, headers, pathParams map[string]string, body any, i any, breakerName string) (*resty.Response, error)
 }
 
 type client struct {
@@ -78,7 +78,7 @@ func (c *client) NewHeaders(h map[string]string) map[string]string {
 	return headers
 }
 
-func (c *client) get(url string, headers, queryParams map[string]string, i interface{}) (*resty.Response, error) {
+func (c *client) get(url string, headers, queryParams map[string]string, i any) (*resty.Response, error) {
 	req := c.session.
 		R().
 		SetHeaders(headers).
@@ -90,23 +90,23 @@ func (c *client) get(url string, headers, queryParams map[string]string, i inter
 	return req.Get(url)
 }
 
-func (c *client) post(url string, headers, pathParams map[string]string, body interface{}, i interface{}) (*resty.Response, error) {
+func (c *client) post(url string, headers, pathParams map[string]string, body any, i any) (*resty.Response, error) {
 	return c.setPost(headers, pathParams, body, i).Post(url)
 }
 
-func (c *client) put(url string, headers, pathParams map[string]string, body interface{}, i interface{}) (*resty.Response, error) {
+func (c *client) put(url string, headers, pathParams map[string]string, body any, i any) (*resty.Response, error) {
 	return c.setPost(headers, pathParams, body, i).Put(url)
 }
 
-func (c *client) patch(url string, headers, pathParams map[string]string, body interface{}, i interface{}) (*resty.Response, error) {
+func (c *client) patch(url string, headers, pathParams map[string]string, body any, i any) (*resty.Response, error) {
 	return c.setPost(headers, pathParams, body, i).Patch(url)
 }
 
-func (c *client) delete(url string, headers, pathParams map[string]string, body interface{}, i interface{}) (*resty.Response, error) {
+func (c *client) delete(url string, headers, pathParams map[string]string, body any, i any) (*resty.Response, error) {
 	return c.setPost(headers, pathParams, body, i).Delete(url)
 }
 
-func (c *client) setPost(headers, pathParams map[string]string, body interface{}, i interface{}) *resty.Request {
+func (c *client) setPost(headers, pathParams map[string]string, body any, i any) *resty.Request {
 	req := c.session.
 		R().
 		SetHeaders(headers).
@@ -120,7 +120,7 @@ func (c *client) setPost(headers, pathParams map[string]string, body interface{}
 }
 
 // Breaker get request
-func (c *client) Get(url string, headers, queryParams map[string]string, i interface{}, breakerName string) (*resty.Response, error) {
+func (c *client) Get(url string, headers, queryParams map[string]string, i any, breakerName string) (*resty.Response, error) {
 	if generic.IsEmpty(breakerName) {
 		res, err := c.get(url, headers, queryParams, i)
 		if err != nil {
@@ -152,7 +152,7 @@ func (c *client) Get(url string, headers, queryParams map[string]string, i inter
 }
 
 // Breaker post request
-func (c *client) Post(url string, headers, pathParams map[string]string, body interface{}, i interface{}, breakerName string) (*resty.Response, error) {
+func (c *client) Post(url string, headers, pathParams map[string]string, body any, i any, breakerName string) (*resty.Response, error) {
 	if generic.IsEmpty(breakerName) {
 		res, err := c.post(url, headers, pathParams, body, i)
 		if err != nil {
@@ -184,7 +184,7 @@ func (c *client) Post(url string, headers, pathParams map[string]string, body in
 }
 
 // Breaker put request
-func (c *client) Put(url string, headers, pathParams map[string]string, body interface{}, i interface{}, breakerName string) (*resty.Response, error) {
+func (c *client) Put(url string, headers, pathParams map[string]string, body any, i any, breakerName string) (*resty.Response, error) {
 	if generic.IsEmpty(breakerName) {
 		res, err := c.put(url, headers, pathParams, body, i)
 		if err != nil {
@@ -216,7 +216,7 @@ func (c *client) Put(url string, headers, pathParams map[string]string, body int
 }
 
 // Breaker patch request
-func (c *client) Patch(url string, headers, pathParams map[string]string, body interface{}, i interface{}, breakerName string) (*resty.Response, error) {
+func (c *client) Patch(url string, headers, pathParams map[string]string, body any, i any, breakerName string) (*resty.Response, error) {
 	if generic.IsEmpty(breakerName) {
 		res, err := c.patch(url, headers, pathParams, body, i)
 		if err != nil {
@@ -248,7 +248,7 @@ func (c *client) Patch(url string, headers, pathParams map[string]string, body i
 }
 
 // Breaker delete request
-func (c *client) Delete(url string, headers, pathParams map[string]string, body interface{}, i interface{}, breakerName string) (*resty.Response, error) {
+func (c *client) Delete(url string, headers, pathParams map[string]string, body any, i any, breakerName string) (*resty.Response, error) {
 	if generic.IsEmpty(breakerName) {
 		res, err := c.delete(url, headers, pathParams, body, i)
 		if err != nil {

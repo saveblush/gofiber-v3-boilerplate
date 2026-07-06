@@ -90,15 +90,15 @@ func (c *Context) PathParser(i any, depth int) {
 	}
 
 	t := reflect.TypeOf(formValue.Interface())
-	for i := 0; i < t.NumField(); i++ {
-		fieldName := t.Field(i).Name
+	for field := range t.Fields() {
+		fieldName := field.Name
 		paramValue := formValue.FieldByName(fieldName)
 		if paramValue.IsValid() {
 			if depth < compositeFormDepth && paramValue.Kind() == reflect.Struct {
 				depth++
 				c.PathParser(paramValue.Addr().Interface(), depth)
 			}
-			tag := t.Field(i).Tag.Get(pathKey)
+			tag := field.Tag.Get(pathKey)
 			if tag != "" {
 				setValue(paramValue, c.Params(tag))
 			}

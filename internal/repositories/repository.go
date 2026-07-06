@@ -26,67 +26,67 @@ func NewRepository() Repository {
 }
 
 // Find find
-func (r *Repository) Find(db *gorm.DB, i interface{}) error {
+func (r *Repository) Find(db *gorm.DB, i any) error {
 	return db.First(i).Error
 }
 
 // FindByID find by id
-func (r *Repository) FindByID(db *gorm.DB, id uint, i interface{}) error {
+func (r *Repository) FindByID(db *gorm.DB, id uint, i any) error {
 	return r.FindByField(db, "id", id, i)
 }
 
 // FindByIDString find
-func (r *Repository) FindByIDString(db *gorm.DB, field string, value string, i interface{}) error {
+func (r *Repository) FindByIDString(db *gorm.DB, field string, value string, i any) error {
 	return r.FindByField(db, field, value, i)
 }
 
 // FindByField find
-func (r *Repository) FindByField(db *gorm.DB, field string, value interface{}, i interface{}) error {
+func (r *Repository) FindByField(db *gorm.DB, field string, value any, i any) error {
 	return db.Where(fmt.Sprintf("%s = ?", field), value).First(i).Error
 }
 
 // FindLastByField find
-func (r *Repository) FindLastByField(db *gorm.DB, field string, value interface{}, i interface{}) error {
+func (r *Repository) FindLastByField(db *gorm.DB, field string, value any, i any) error {
 	return db.Where(fmt.Sprintf("%s = ?", field), value).Last(i).Error
 }
 
 // FindAllByIDs get all by ids
-func (r *Repository) FindAllByIDs(db *gorm.DB, ids []uint, i interface{}) error {
+func (r *Repository) FindAllByIDs(db *gorm.DB, ids []uint, i any) error {
 	return db.Where("id in (?)", ids).Find(i).Error
 }
 
 // FindAllByStrings get all by strins
-func (r *Repository) FindAllByStrings(db *gorm.DB, field string, values []string, i interface{}) error {
+func (r *Repository) FindAllByStrings(db *gorm.DB, field string, values []string, i any) error {
 	return db.Where(fmt.Sprintf("%s in (?)", field), values).Find(i).Error
 }
 
 // FindAllByField get all by field
-func (r *Repository) FindAllByField(db *gorm.DB, field string, values interface{}, i interface{}) error {
+func (r *Repository) FindAllByField(db *gorm.DB, field string, values any, i any) error {
 	return db.Where(fmt.Sprintf("%s in (?)", field), values).Find(i).Error
 }
 
 // FindAllByValues get all by values
-func (r *Repository) FindAllByValues(db *gorm.DB, field string, values interface{}, i interface{}) error {
+func (r *Repository) FindAllByValues(db *gorm.DB, field string, values any, i any) error {
 	return db.Where(fmt.Sprintf("%s IN (?)", field), values).Find(i).Error
 }
 
 // Create create
-func (r *Repository) Create(db *gorm.DB, i interface{}) error {
+func (r *Repository) Create(db *gorm.DB, i any) error {
 	return db.Omit(clause.Associations).Create(i).Error
 }
 
 // CreateInBatch create with batch size
-func (r *Repository) CreateInBatch(db *gorm.DB, i interface{}, batchSize int) error {
+func (r *Repository) CreateInBatch(db *gorm.DB, i any, batchSize int) error {
 	return db.Omit(clause.Associations).CreateInBatches(i, batchSize).Error
 }
 
 // Update update
-func (r *Repository) Update(db *gorm.DB, m, i interface{}) error {
+func (r *Repository) Update(db *gorm.DB, m, i any) error {
 	return db.Model(m).Omit(clause.Associations).Updates(i).Error
 }
 
 // Upsert upsert
-func (r *Repository) Upsert(db *gorm.DB, uniqueKey string, columns []string, i interface{}) error {
+func (r *Repository) Upsert(db *gorm.DB, uniqueKey string, columns []string, i any) error {
 	split := strings.Split(uniqueKey, ",")
 	uniqueKeys := []clause.Column{}
 	for _, v := range split {
@@ -103,7 +103,7 @@ func (r *Repository) Upsert(db *gorm.DB, uniqueKey string, columns []string, i i
 }
 
 // BulkUpsert bulk upsert
-func (r *Repository) BulkUpsert(db *gorm.DB, uniqueKeys []string, columns []string, i interface{}, batchSize int, doNothing ...bool) error {
+func (r *Repository) BulkUpsert(db *gorm.DB, uniqueKeys []string, columns []string, i any, batchSize int, doNothing ...bool) error {
 	uniqueColumns := []clause.Column{}
 	for _, uniqueKey := range uniqueKeys {
 		uniqueColumns = append(uniqueColumns, clause.Column{Name: uniqueKey})
@@ -125,13 +125,13 @@ func (r *Repository) BulkUpsert(db *gorm.DB, uniqueKeys []string, columns []stri
 }
 
 // Delete update stamp deleted_at
-func (r *Repository) Delete(db *gorm.DB, i interface{}) error {
+func (r *Repository) Delete(db *gorm.DB, i any) error {
 	return db.Omit(clause.Associations).Delete(i).Error
 }
 
 // SoftDelete soft delete
-func (r *Repository) SoftDelete(db *gorm.DB, field string, value interface{}, actorID string, i interface{}) error {
-	values := map[string]interface{}{
+func (r *Repository) SoftDelete(db *gorm.DB, field string, value any, actorID string, i any) error {
+	values := map[string]any{
 		"deleted_at": utils.Now(),
 	}
 	if actorID != "" {
@@ -166,7 +166,7 @@ const (
 )
 
 // FindAllAndPageInformation get page information
-func (r *Repository) FindAllAndPageInformation(db *gorm.DB, pageForm PageForm, entities interface{}, selector ...string) (*models.PageInformation, error) {
+func (r *Repository) FindAllAndPageInformation(db *gorm.DB, pageForm PageForm, entities any, selector ...string) (*models.PageInformation, error) {
 	var count int64
 	stmt := gorm.Statement{DB: db}
 
@@ -241,7 +241,7 @@ type SortInfo interface {
 }
 
 // Sort order by
-func (r *Repository) Sort(opt SortInfo, entities interface{}) func(db *gorm.DB) *gorm.DB {
+func (r *Repository) Sort(opt SortInfo, entities any) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		stmt := gorm.Statement{DB: db}
 		err := stmt.Parse(entities)

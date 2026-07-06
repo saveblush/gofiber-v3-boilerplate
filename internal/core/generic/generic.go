@@ -27,7 +27,7 @@ func RemoveDuplicate[T comparable](sliceList []T) []T {
 }
 
 // IsEmpty is empty
-func IsEmpty(i interface{}) bool {
+func IsEmpty(i any) bool {
 	if i == nil {
 		return true
 	}
@@ -37,7 +37,7 @@ func IsEmpty(i interface{}) bool {
 	case reflect.Array, reflect.Chan, reflect.Map, reflect.Slice:
 		return v.Len() == 0
 
-	case reflect.Ptr:
+	case reflect.Pointer:
 		if v.IsNil() {
 			return true
 		}
@@ -51,7 +51,7 @@ func IsEmpty(i interface{}) bool {
 }
 
 // ConvertInterfaceToStruct convert interface to struct
-func ConvertInterfaceToStruct(data, value interface{}) error {
+func ConvertInterfaceToStruct(data, value any) error {
 	b, err := json.Marshal(&data)
 	if err != nil {
 		return err

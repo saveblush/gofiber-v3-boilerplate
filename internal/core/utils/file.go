@@ -41,5 +41,6 @@ func GetFileSize(r io.Reader) (int64, error) {
 		}
 		return fi.Size(), nil
 	}
+
 	return 0, errors.New("not an *os.File")
 }

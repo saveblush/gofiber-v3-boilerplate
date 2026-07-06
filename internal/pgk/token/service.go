@@ -57,7 +57,7 @@ func (s *service) VerifyRefresh(c *cctx.Context, tokenString string) (*models.To
 		return nil, errors.New("refresh token not found")
 	}
 
-	token, err := jwt.ParseWithClaims(tokenString, &models.TokenClaims{}, func(t *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &models.TokenClaims{}, func(t *jwt.Token) (any, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}

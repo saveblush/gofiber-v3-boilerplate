@@ -8,7 +8,6 @@ import (
 	"gorm.io/gorm/logger"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/config"
-	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils"
 )
 
 var (
@@ -17,10 +16,11 @@ var (
 )
 
 var (
-	defaultMaxIdleConns = 10
-	defaultMaxOpenConns = 30
+	defaultMaxIdleConns = 1
+	defaultMaxOpenConns = 1
 	defaultMaxLifetime  = time.Minute
 	defaultCharset      = "utf8mb4"
+	defaultTimeZone     = "Asia/Bangkok"
 )
 
 // gorm config
@@ -62,7 +62,7 @@ func InitConnection(cf *Configuration) (*Session, error) {
 		cf.Charset = defaultCharset
 	}
 	if cf.Timezone == "" {
-		cf.Timezone = utils.TimeZone()
+		cf.Timezone = defaultTimeZone
 	}
 	if cf.MaxIdleConns == 0 {
 		cf.MaxIdleConns = defaultMaxIdleConns

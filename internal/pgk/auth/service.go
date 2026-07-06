@@ -13,9 +13,9 @@ import (
 
 // Service service interface
 type Service interface {
-	Login(c *cctx.Context, req *RequestLogin) (interface{}, error)
+	Login(c *cctx.Context, req *RequestLogin) (any, error)
 	Logout(c *cctx.Context) error
-	LoginBypass(c *cctx.Context, req *RequestLoginBypass) (interface{}, error)
+	LoginBypass(c *cctx.Context, req *RequestLoginBypass) (any, error)
 	Bypass(c *cctx.Context, req *RequestBypass) ([]*models.User, error)
 	Me(c *cctx.Context) error
 	RefreshToken(c *cctx.Context, req *token.RequestRefresh) (*models.Token, error)
@@ -115,7 +115,7 @@ func (s *service) getLogin(c *cctx.Context, req *RequestLogLogin) (*models.UserL
 }
 
 // Login login
-func (s *service) Login(c *cctx.Context, req *RequestLogin) (interface{}, error) {
+func (s *service) Login(c *cctx.Context, req *RequestLogin) (any, error) {
 	var pass bool
 
 	user, err := s.user.Find(c, &user.Request{UserID: req.UserID, UserStatus: []int{1}})
@@ -202,7 +202,7 @@ func (s *service) Logout(c *cctx.Context) error {
 }
 
 // LoginBypass login bypass
-func (s *service) LoginBypass(c *cctx.Context, req *RequestLoginBypass) (interface{}, error) {
+func (s *service) LoginBypass(c *cctx.Context, req *RequestLoginBypass) (any, error) {
 	user, err := s.user.Find(c, &user.Request{UserID: req.UserID, UserStatus: []int{1}})
 	if err != nil {
 		logger.Log.Errorf("find user error: %s", err)

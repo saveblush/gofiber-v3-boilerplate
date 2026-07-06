@@ -129,7 +129,7 @@ func (c *client) Close() error {
 	return nil
 }
 
-/*func (c *client) Set(key string, value interface{}, expiredTime time.Duration) error {
+/*func (c *client) Set(key string, value any, expiredTime time.Duration) error {
 	b := bytes.Buffer{}
 	e := gob.NewEncoder(&b)
 	err := e.Encode(value)
@@ -145,7 +145,7 @@ func (c *client) Close() error {
 	return nil
 }
 
-func (c *client) Get(key string, value interface{}) error {
+func (c *client) Get(key string, value any) error {
 	val, err := c.client.Get(ctx, key).Result()
 	if err != nil {
 		if err == redis.Nil {

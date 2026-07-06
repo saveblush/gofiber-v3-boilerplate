@@ -15,7 +15,7 @@ type Localizer interface {
 }
 
 // Localization localization
-func (c *Context) Localization(i interface{}, depth int) {
+func (c *Context) Localization(i any, depth int) {
 	const (
 		key = "Localization"
 	)

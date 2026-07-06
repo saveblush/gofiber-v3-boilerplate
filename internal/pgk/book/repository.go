@@ -13,9 +13,9 @@ type Repository interface {
 	Find(db *gorm.DB, req *Request) (*models.Book, error)
 	FindAll(db *gorm.DB, req *Request) ([]*models.Book, error)
 	FindAllPage(db *gorm.DB, req *Request) (*models.Page, error)
-	Create(db *gorm.DB, i interface{}) error
-	Update(db *gorm.DB, m, i interface{}) error
-	Delete(db *gorm.DB, i interface{}) error
+	Create(db *gorm.DB, i any) error
+	Update(db *gorm.DB, m, i any) error
+	Delete(db *gorm.DB, i any) error
 	DeleteFile(db *gorm.DB, req *RequestAttach) error
 }
 

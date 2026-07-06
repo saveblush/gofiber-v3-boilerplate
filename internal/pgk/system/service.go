@@ -7,7 +7,7 @@ import (
 
 // service interface
 type Service interface {
-	Action(c *cctx.Context, req *Request) (interface{}, error)
+	Action(c *cctx.Context, req *Request) (any, error)
 }
 
 type service struct {
@@ -23,7 +23,7 @@ func NewService() Service {
 }
 
 // Action action
-func (s *service) Action(c *cctx.Context, req *Request) (interface{}, error) {
+func (s *service) Action(c *cctx.Context, req *Request) (any, error) {
 	var status string
 	if req.Status == "on" {
 		status = config.AvailableStatusOnline
@@ -39,7 +39,7 @@ func (s *service) Action(c *cctx.Context, req *Request) (interface{}, error) {
 	s.config.SetConfigAvailableStatus(status)
 	s.config.SetConfigAvailableDescription(req.Body)
 
-	return map[string]interface{}{
+	return map[string]any{
 		"system": status,
 	}, nil
 }

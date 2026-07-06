@@ -26,11 +26,11 @@ var (
 
 // service interface
 type Service interface {
-	Find(c *cctx.Context, req *Request) (interface{}, error)
-	FindAll(c *cctx.Context, req *Request) (interface{}, error)
-	FindByID(c *cctx.Context, req *RequestID) (interface{}, error)
-	Create(c *cctx.Context, req *RequestCreate) (interface{}, error)
-	Update(c *cctx.Context, req *RequestUpdate) (interface{}, error)
+	Find(c *cctx.Context, req *Request) (any, error)
+	FindAll(c *cctx.Context, req *Request) (any, error)
+	FindByID(c *cctx.Context, req *RequestID) (any, error)
+	Create(c *cctx.Context, req *RequestCreate) (any, error)
+	Update(c *cctx.Context, req *RequestUpdate) (any, error)
 	Delete(c *cctx.Context, req *RequestID) error
 	Script(c *cctx.Context) error
 }
@@ -52,7 +52,7 @@ func NewService() Service {
 }
 
 // Find find
-func (s *service) Find(c *cctx.Context, req *Request) (interface{}, error) {
+func (s *service) Find(c *cctx.Context, req *Request) (any, error) {
 	res, err := s.repository.Find(c.GetDatabase(), req)
 	if err != nil {
 		return nil, err
@@ -76,7 +76,7 @@ func (s *service) Find(c *cctx.Context, req *Request) (interface{}, error) {
 }
 
 // FindAll find all
-func (s *service) FindAll(c *cctx.Context, req *Request) (interface{}, error) {
+func (s *service) FindAll(c *cctx.Context, req *Request) (any, error) {
 	// แบ่งหน้า
 	if req.Pagination {
 		res, err := s.repository.FindAllPage(c.GetDatabase(), req)
@@ -96,7 +96,7 @@ func (s *service) FindAll(c *cctx.Context, req *Request) (interface{}, error) {
 }
 
 // FindByID find by id
-func (s *service) FindByID(c *cctx.Context, req *RequestID) (interface{}, error) {
+func (s *service) FindByID(c *cctx.Context, req *RequestID) (any, error) {
 	key := fmt.Sprintf("%s-%d", keyCache, req.ID)
 	res := &models.Book{}
 	err := s.cache.Get(key, res)
@@ -120,7 +120,7 @@ func (s *service) FindByID(c *cctx.Context, req *RequestID) (interface{}, error)
 }
 
 // Create create
-func (s *service) Create(c *cctx.Context, req *RequestCreate) (interface{}, error) {
+func (s *service) Create(c *cctx.Context, req *RequestCreate) (any, error) {
 	data := &models.Book{
 		Name: req.Name,
 	}
@@ -134,7 +134,7 @@ func (s *service) Create(c *cctx.Context, req *RequestCreate) (interface{}, erro
 }
 
 // Update update
-func (s *service) Update(c *cctx.Context, req *RequestUpdate) (interface{}, error) {
+func (s *service) Update(c *cctx.Context, req *RequestUpdate) (any, error) {
 	data := &models.Book{}
 	copier.Copy(data, &req)
 
