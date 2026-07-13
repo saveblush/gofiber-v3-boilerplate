@@ -1,13 +1,14 @@
 package cache
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"time"
 
-	"github.com/goccy/go-json"
 	"github.com/redis/go-redis/v9"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 var (
@@ -66,12 +67,14 @@ func New() Client {
 }
 
 func (c *client) Set(key string, value any, expiredTime time.Duration) error {
-	data, errMar := json.Marshal(&value)
-	if errMar != nil {
-		return errMar
+	b := bytes.Buffer{}
+	enc := msgpack.NewEncoder(&b)
+	enc.SetCustomStructTag("json")
+	if err := enc.Encode(value); err != nil {
+		return err
 	}
 
-	err := c.client.Set(ctx, key, data, expiredTime).Err()
+	err := c.client.Set(ctx, key, b.Bytes(), expiredTime).Err()
 	if err != nil {
 		return err
 	}
@@ -85,13 +88,15 @@ func (c *client) Get(key string, value any) error {
 		if err == redis.Nil {
 			return errors.New("key does not exists")
 		}
-
 		return err
 	}
 
-	errMar := json.Unmarshal([]byte(val), &value)
-	if errMar != nil {
-		return errMar
+	b := bytes.Buffer{}
+	b.Write([]byte(val))
+	dec := msgpack.NewDecoder(&b)
+	dec.SetCustomStructTag("json")
+	if err := dec.Decode(&value); err != nil {
+		return err
 	}
 
 	return nil
@@ -129,7 +134,7 @@ func (c *client) Close() error {
 	return nil
 }
 
-/*func (c *client) Set(key string, value any, expiredTime time.Duration) error {
+/*func (c *client) Set(key string, value interface{}, expiredTime time.Duration) error {
 	b := bytes.Buffer{}
 	e := gob.NewEncoder(&b)
 	err := e.Encode(value)
@@ -145,7 +150,7 @@ func (c *client) Close() error {
 	return nil
 }
 
-func (c *client) Get(key string, value any) error {
+func (c *client) Get(key string, value interface{}) error {
 	val, err := c.client.Get(ctx, key).Result()
 	if err != nil {
 		if err == redis.Nil {
