@@ -1,15 +1,16 @@
 #version: "3.9"
 services:
   gofiber-v3-boilerplate:
-    image: gofiber-v3-boilerplate:0.1.0
+    image: gofiber-v3-boil:0.4.2
     container_name: gofiber-v3-boilerplate
     restart: unless-stopped
-    user: ":"
-    networks:
-      - tunnel-net #the name of our Cloudflare Zero Trust Tunnel Docker's Network
+    #networks:
+    #  - tunnel-net #the name of our Cloudflare Zero Trust Tunnel Docker's Network
     ports:
       - 8456:8456
+    labels:
+      logging: "enabled"
 
-networks:
-  tunnel-net: #this is the name of the network that we created in the Cloudflared Container
-    external: true #we already created it!
+#networks:
+#  tunnel-net: #this is the name of the network that we created in the Cloudflared Container
+#    external: true #we already created it!

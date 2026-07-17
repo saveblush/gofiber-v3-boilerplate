@@ -136,8 +136,8 @@ func (c *client) Close() error {
 
 /*func (c *client) Set(key string, value interface{}, expiredTime time.Duration) error {
 	b := bytes.Buffer{}
-	e := gob.NewEncoder(&b)
-	err := e.Encode(value)
+	enc := gob.NewEncoder(&b)
+	err := enc.Encode(value)
 	if err != nil {
 		return err
 	}
@@ -161,8 +161,8 @@ func (c *client) Get(key string, value interface{}) error {
 
 	b := bytes.Buffer{}
 	b.Write([]byte(val))
-	d := gob.NewDecoder(&b)
-	err = d.Decode(value)
+	dec := gob.NewDecoder(&b)
+	err = dec.Decode(&value)
 	if err != nil {
 		return err
 	}

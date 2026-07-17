@@ -25,6 +25,7 @@ import (
 func main() {
 	// Init logger
 	logger.InitLogger()
+	defer logger.Log.Sync()
 
 	// Init configuration
 	err := config.InitConfig()

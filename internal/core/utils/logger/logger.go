@@ -11,22 +11,26 @@ var Log *zap.SugaredLogger
 
 // InitLogger init logger
 func InitLogger() {
+	level := zapcore.InfoLevel
 	lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl < zapcore.InvalidLevel
-		//return lvl < zapcore.ErrorLevel
+		return lvl >= level
 	})
 
 	encoderConfig := zap.NewProductionEncoderConfig()
 	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 
 	consoleEncoder := zapcore.NewJSONEncoder(encoderConfig)
-	core := zapcore.NewTee(
-		zapcore.NewCore(consoleEncoder, zapcore.Lock(os.Stdout), lowPriority),
+	core := zapcore.NewCore(
+		consoleEncoder,
+		zapcore.AddSync(os.Stdout),
+		lowPriority,
 	)
 
 	logger := zap.New(core, zap.AddCaller())
-	defer logger.Sync()
 
-	zap.ReplaceGlobals(logger)
-	Log = zap.S()
+	// ไม่จำเป็นต้องประกาศ global เพราะทุก pkg เรียกใช้ lib นี้
+	// zap.ReplaceGlobals(logger)
+	// Log = zap.S()
+
+	Log = logger.Sugar()
 }

@@ -8,7 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/saveblush/ftp"
+	//"github.com/saveblush/ftp"
+	"github.com/jlaffaye/ftp"
 
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/generic"
 	"github.com/saveblush/gofiber-v3-boilerplate/internal/core/utils/logger"
@@ -29,39 +30,42 @@ type Auth struct {
 }
 
 // CcDir change current dir
-func (c *client) ccDir(path string) error {
-	if path == "" {
+func (c *client) ensureDir(pathDir string) error {
+	if pathDir == "" {
 		return errors.New("path is required")
 	}
 
 	var joinPath []string
-	paths := strings.Split(path, "/")
-	for _, p := range paths {
-		if p != "" {
-			joinPath = append(joinPath, p)
-			dir := fmt.Sprintf("/%s", strings.Join(joinPath, "/"))
+	paths := strings.SplitSeq(pathDir, "/")
+	for p := range paths {
+		if p == "" {
+			continue
+		}
 
-			//  ไปยัง dir และเป็นการตรวจสอบ dir ว่ามีหรือยัง
-			err := c.ChangeDir(dir)
+		joinPath = append(joinPath, p)
+		dir := fmt.Sprintf("/%s", strings.Join(joinPath, "/"))
+
+		//  ไปยัง dir และเป็นการตรวจสอบ dir ว่ามีหรือยัง
+		err := c.ChangeDir(dir)
+		if err != nil {
+			// ถือว่ายังไม่มี dir
+			// สร้าง dir
+			err = c.MakeDir(dir)
 			if err != nil {
-				// ถือว่ายังไม่มี dir
-				// สร้าง dir
-				err = c.MakeDir(dir)
-				if err != nil {
-					return err
-				}
+				return err
+			}
 
-				// เปลี่ยนสิทธิ์
-				err = c.ChangePermission("0777", dir)
-				if err != nil {
-					return err
-				}
+			// กำหนด permission
+			// ปิดส่วน กำหนด permission และกลับไปใช้ lib github.com/jlaffaye/ftp
+			// err = c.ChangePermission("0777", dir)
+			// if err != nil {
+			// 	return err
+			// }
 
-				// ไปยัง dir
-				err = c.ChangeDir(dir)
-				if err != nil {
-					return err
-				}
+			// ไปยัง dir
+			err = c.ChangeDir(dir)
+			if err != nil {
+				return err
 			}
 		}
 	}
@@ -73,7 +77,7 @@ func (c *client) ccDir(path string) error {
 	}
 
 	// เช็ค dir ตรงตามที่ต้องการ
-	if !generic.Equal(path, curDir) {
+	if !generic.Equal(pathDir, curDir) {
 		return errors.New("dir not found")
 	}
 
@@ -105,7 +109,7 @@ func Upload(bucketName, prefix, objectName string, object io.Reader, auth *Auth)
 	if err != nil {
 		// กรณีไม่เจอ dir
 		client := client{c}
-		err = client.ccDir(bucketName)
+		err = client.ensureDir(bucketName)
 		if err != nil {
 			return err
 		}

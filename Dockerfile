@@ -57,6 +57,9 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/group /etc/group
 
+# directory /tmp ใช้สำหรับเก็บ tmpfile ตอน upload
+COPY --from=builder --chown=gouser:gogroup /tmp /tmp
+
 ## Copy app from the builder
 COPY --from=builder /build/main ./
 COPY --from=builder --chown=gouser:gogroup /build/docs ./docs
